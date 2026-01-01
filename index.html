@@ -205,142 +205,165 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const navItems = document.querySelectorAll('.nav-item');
-            const pages = document.querySelectorAll('.page');
+  document.addEventListener('DOMContentLoaded', function () {
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = document.querySelectorAll('.page');
 
-            function switchPage(pageId) {
-                pages.forEach(page => {
-                    page.classList.remove('active');
-                });
-                
-                const targetPage = document.getElementById(pageId);
-                if (targetPage) {
-                    targetPage.classList.add('active');
-                }
+    function switchPage(pageId) {
+      pages.forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId)?.classList.add('active');
 
-                navItems.forEach(item => {
-                    item.classList.remove('active');
-                    if (item.getAttribute('data-page') === pageId) {
-                        item.classList.add('active');
-                    }
-                });
-            }
+      navItems.forEach(item => {
+        item.classList.toggle(
+          'active',
+          item.getAttribute('data-page') === pageId
+        );
+      });
+    }
 
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const pageId = this.getAttribute('data-page');
-                    switchPage(pageId);
-                });
-            });
-
-            // تنظیم صفحه پیش‌فرض (برای شروع، صفحه اصلی را فعال می‌کنیم)
-            switchPage('home-page');
-        });
-
-        function openAddAccount() {
-  bale.showPopup({
-    title: "افزودن اکانت",
-    message: `
-      <input id="phoneInput" placeholder="989xxxxxxxxx"
-        style="width:100%;padding:10px;border-radius:6px;border:1px solid #ccc"/>
-    `,
-    buttons: [
-      { text: "ارسال کد", type: "default", onClick: sendCodeFromPopup },
-      { text: "لغو", type: "cancel" }
-    ]
-  });
-                                      }
-
-        async function sendCodeFromPopup() {
-  const phone = document.getElementById("phoneInput").value;
-
-  const res = await fetch("https://hunter-api-2x97.onrender.com/login/send-code", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone })
-  });
-
-  const data = await res.json();
-
-  if (!data.ok) {
-    bale.showPopup({ title: "❌ خطا", message: data.error });
-    return;
-  }
-
-  if (!/^989\d{9}$/.test(phone)) {
-  bale.showPopup({
-    title: "❌ خطا",
-    message: "شماره تلفن معتبر نیست"
-  });
-  return;
-      }
-
-  askForCode(phone);
-            }
-
-        function askForCode(phone) {
-  bale.showPopup({
-    title: "کد تایید",
-    message: `
-      <input id="codeInput" placeholder="کد تایید"
-        style="width:100%;padding:10px;border-radius:6px;border:1px solid #ccc"/>
-    `,
-    buttons: [
-      { text: "تایید", type: "default", onClick: () => verifyCode(phone) },
-      { text: "لغو", type: "cancel" }
-    ]
-  });
-        }
-
-        async function verifyCode(phone) {
-  const code = document.getElementById("codeInput").value;
-
-  const res = await fetch("https://hunter-api-2x97.onrender.com/login/verify-code", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone, code })
-  });
-
-  const data = await res.json();
-
-  if (!data.ok) {
-    bale.showPopup({
-      title: "❌ خطا",
-      message: data.error || "کد اشتباه است"
+    navItems.forEach(item => {
+      item.addEventListener('click', () =>
+        switchPage(item.getAttribute('data-page'))
+      );
     });
-    return;
+
+    switchPage('home-page');
+    loadAccounts();
+  });
+
+  function openAddAccount() {
+    bale.showPopup({
+      title: "افزودن اکانت",
+      message: `
+        <input id="phoneInput" placeholder="989xxxxxxxxx"
+          style="width:100%;padding:10px;border-radius:6px;border:1px solid #ccc"/>
+      `,
+      buttons: [
+        { text: "ارسال کد", type: "default", onClick: sendCodeFromPopup },
+        { text: "لغو", type: "cancel" }
+      ]
+    });
   }
 
-  bale.showPopup({
-    title: "✅ موفق",
-    message: "اکانت با موفقیت اضافه شد"
-  });
+  async function sendCodeFromPopup() {
+    const phone = document.getElementById("phoneInput")?.value?.trim();
 
-  loadAccounts(); // لیست رو رفرش کن
+    if (!/^989\d{9}$/.test(phone)) {
+      bale.showPopup({
+        title: "❌ خطا",
+        message: "شماره تلفن معتبر نیست"
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        "https://hunter-api-2x97.onrender.com/login/send-code",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone })
+        }
+      );
+
+      const data = await res.json();
+
+      if (!data.ok) {
+        throw new Error(data.error || "ارسال کد ناموفق بود");
       }
 
-        async function loadAccounts() {
-  const res = await fetch("https://hunter-api-2x97.onrender.com/accounts");
-  const data = await res.json();
+      askForCode(phone);
+    } catch (err) {
+      bale.showPopup({
+        title: "❌ خطا",
+        message: err.message
+      });
+    }
+  }
 
-  const box = document.getElementById("accounts-list");
-  box.innerHTML = "";
+  function askForCode(phone) {
+    bale.showPopup({
+      title: "کد تایید",
+      message: `
+        <input id="codeInput" placeholder="کد تایید"
+          style="width:100%;padding:10px;border-radius:6px;border:1px solid #ccc"/>
+      `,
+      buttons: [
+        { text: "تایید", type: "default", onClick: () => verifyCode(phone) },
+        { text: "لغو", type: "cancel" }
+      ]
+    });
+  }
 
-  data.accounts.forEach(acc => {
-    const div = document.createElement("div");
-    div.style = "padding:10px;margin-top:8px;background:#f4f4f4;border-radius:6px;";
-    div.innerHTML = `
-      📱 ${acc.phone}
-      <span style="color:${acc.online ? 'green' : 'red'}">
-        (${acc.online ? 'آنلاین' : 'آفلاین'})
-      </span>
-    `;
-    box.appendChild(div);
-  });
+  async function verifyCode(phone) {
+    const code = document.getElementById("codeInput")?.value?.trim();
+
+    if (!code) {
+      bale.showPopup({
+        title: "❌ خطا",
+        message: "کد را وارد کنید"
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        "https://hunter-api-2x97.onrender.com/login/verify-code",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone, code })
         }
+      );
 
-        document.addEventListener("DOMContentLoaded", loadAccounts);
-    </script>
+      const data = await res.json();
+
+      if (!data.ok) {
+        throw new Error(data.error || "کد اشتباه است");
+      }
+
+      bale.showPopup({
+        title: "✅ موفق",
+        message: "اکانت با موفقیت اضافه شد"
+      });
+
+      loadAccounts();
+    } catch (err) {
+      bale.showPopup({
+        title: "❌ خطا",
+        message: err.message
+      });
+    }
+  }
+
+  async function loadAccounts() {
+    try {
+      const res = await fetch(
+        "https://hunter-api-2x97.onrender.com/accounts"
+      );
+      const data = await res.json();
+
+      const box = document.getElementById("accounts-list");
+      box.innerHTML = "";
+
+      data.accounts.forEach(acc => {
+        const div = document.createElement("div");
+        div.style =
+          "padding:10px;margin-top:8px;background:#f4f4f4;border-radius:6px;";
+        div.innerHTML = `
+          📱 ${acc.phone}
+          <span style="color:${acc.online ? 'green' : 'red'}">
+            (${acc.online ? 'آنلاین' : 'آفلاین'})
+          </span>
+        `;
+        box.appendChild(div);
+      });
+    } catch {
+      document.getElementById("accounts-list").innerHTML =
+        "<p style='color:red'>خطا در دریافت اکانت‌ها</p>";
+    }
+  }
+</script>
+
 </body>
 </html>
