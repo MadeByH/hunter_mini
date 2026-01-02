@@ -118,22 +118,14 @@
             <div class="content-card">
   <h3>اکانت‌ها</h3>
 
-  if (!data.accounts || data.accounts.length === 0) {
-  box.innerHTML = "<p>هیچ اکانتی ثبت نشده</p>";
-  return;
-}
-
-  <button
-    onclick="openAddAccount()"
-    style="
-      padding: 12px 20px;
-      background:#3498db;
-      color:white;
-      border:none;
-      border-radius:8px;
-      font-size:15px;
-      cursor:pointer;
-    ">
+  <button onclick="openAddAccount()" style="
+    padding:12px 20px;
+    background:#3498db;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:15px;
+    cursor:pointer;">
     ➕ افزودن اکانت
   </button>
 
@@ -210,34 +202,35 @@
     </div>
 
     <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', function () {
   if (window.bale?.ready) {
     bale.ready();
-  }, function () {
-    const navItems = document.querySelectorAll('.nav-item');
-    const pages = document.querySelectorAll('.page');
+  }
 
-    function switchPage(pageId) {
-      pages.forEach(p => p.classList.remove('active'));
-      document.getElementById(pageId)?.classList.add('active');
+  const navItems = document.querySelectorAll('.nav-item');
+  const pages = document.querySelectorAll('.page');
 
-      navItems.forEach(item => {
-        item.classList.toggle(
-          'active',
-          item.getAttribute('data-page') === pageId
-        );
-      });
-    }
+  function switchPage(pageId) {
+    pages.forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId)?.classList.add('active');
 
     navItems.forEach(item => {
-      item.addEventListener('click', () =>
-        switchPage(item.getAttribute('data-page'))
+      item.classList.toggle(
+        'active',
+        item.getAttribute('data-page') === pageId
       );
     });
+  }
 
-    switchPage('home-page');
-    loadAccounts();
+  navItems.forEach(item => {
+    item.addEventListener('click', () =>
+      switchPage(item.getAttribute('data-page'))
+    );
   });
+
+  switchPage('home-page');
+  loadAccounts();
+});
 
   function openAddAccount() {
     bale.showPopup({
@@ -347,31 +340,35 @@
   }
 
   async function loadAccounts() {
-    try {
-      const res = await fetch(
-        "https://hunter-api-2x97.onrender.com/accounts"
-      );
-      const data = await res.json();
+  const box = document.getElementById("accounts-list");
+  box.innerHTML = "⏳ در حال بارگذاری...";
 
-      const box = document.getElementById("accounts-list");
-      box.innerHTML = "";
+  try {
+    const res = await fetch("https://hunter-api-2x97.onrender.com/accounts");
+    const data = await res.json();
 
-      data.accounts.forEach(acc => {
-        const div = document.createElement("div");
-        div.style =
-          "padding:10px;margin-top:8px;background:#f4f4f4;border-radius:6px;";
-        div.innerHTML = `
-          📱 ${acc.phone}
-          <span style="color:${acc.online ? 'green' : 'red'}">
-            (${acc.online ? 'آنلاین' : 'آفلاین'})
-          </span>
-        `;
-        box.appendChild(div);
-      });
-    } catch {
-      document.getElementById("accounts-list").innerHTML =
-        "<p style='color:red'>خطا در دریافت اکانت‌ها</p>";
+    box.innerHTML = "";
+
+    if (!data.accounts || data.accounts.length === 0) {
+      box.innerHTML = "<p>هیچ اکانتی ثبت نشده</p>";
+      return;
     }
+
+    data.accounts.forEach(acc => {
+      const div = document.createElement("div");
+      div.style =
+        "padding:10px;margin-top:8px;background:#f4f4f4;border-radius:6px;";
+      div.innerHTML = `
+        📱 ${acc.phone}
+        <span style="color:${acc.online ? 'green' : 'red'}">
+          (${acc.online ? 'آنلاین' : 'آفلاین'})
+        </span>
+      `;
+      box.appendChild(div);
+    });
+  } catch {
+    box.innerHTML = "<p style='color:red'>خطا در دریافت اکانت‌ها</p>";
+  }
   }
 </script>
 
