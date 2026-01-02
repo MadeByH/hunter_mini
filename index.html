@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>𝑴𝒚 𝑯𝒖𝒏𝒕𝒆𝒓 | شکارچی من</title>
+  <title>My Hunter | شکارچی من</title>
   <meta name="theme-color" content="#2c3e50"/>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -28,7 +28,7 @@
 
     .content {
       flex: 1;
-      padding: 15px;
+      padding: 16px;
       overflow-y: auto;
     }
 
@@ -41,14 +41,6 @@
       border-radius: 10px;
     }
 
-    ul {
-      padding-right: 18px;
-    }
-
-    li {
-      margin: 8px 0;
-    }
-
     button {
       padding: 12px 18px;
       background: #3498db;
@@ -56,7 +48,15 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    ul {
+      padding-right: 20px;
+    }
+
+    li {
+      margin: 8px 0;
     }
 
     .bottom-nav {
@@ -90,37 +90,36 @@
 <body>
 
 <div class="header">
-  <h2>𝑴𝒚 𝑯𝒖𝒏𝒕𝒆𝒓</h2>
+  <h3>My Hunter | شکارچی من</h3>
 </div>
 
 <div class="content">
 
-  <!-- HOME -->
   <div id="home-page" class="page active">
     <div class="content-card">
       <h3>اکانت‌ها</h3>
-      <button id="add-account-btn">➕ افزودن اکانت</button>
-      <ul id="accounts-list"></ul>
+      <button id="addAccountBtn">➕ افزودن اکانت</button>
+      <ul id="accountsList"></ul>
     </div>
   </div>
 
-  <!-- SHOP -->
   <div id="shop-page" class="page">
     <div class="content-card">
       <h3>پلن‌ها</h3>
-      <p>در آینده…</p>
+      <p>در حال توسعه…</p>
     </div>
   </div>
 
-  <!-- SETTINGS -->
   <div id="settings-page" class="page">
     <div class="content-card">
-      <h3>تنظیمات</h3>
-      <p>در حال توسعه</p>
+      <ul>
+        <li>تغییر رمز عبور</li>
+        <li>مدیریت توکن‌ها</li>
+        <li>نوتیفیکیشن</li>
+      </ul>
     </div>
   </div>
 
-  <!-- INFO -->
   <div id="info-page" class="page">
     <div class="content-card">
       <p>وضعیت سیستم: فعال ✅</p>
@@ -137,21 +136,24 @@
 </div>
 
 <script>
-/* ---------- INIT ---------- */
-document.addEventListener("DOMContentLoaded", () => {
-  bale.ready();
+let currentPhone = null;
 
+/* ---- BALE READY ---- */
+bale.ready().then(() => {
+  bindUI();
+  loadAccounts();
+});
+
+/* ---- UI ---- */
+function bindUI() {
   document.querySelectorAll(".nav-item").forEach(item => {
     item.addEventListener("click", () => switchPage(item.dataset.page));
   });
 
-  document.getElementById("add-account-btn")
+  document.getElementById("addAccountBtn")
     .addEventListener("click", openAddAccount);
+}
 
-  setTimeout(loadAccounts, 200);
-});
-
-/* ---------- NAV ---------- */
 function switchPage(id) {
   document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -161,13 +163,13 @@ function switchPage(id) {
   );
 }
 
-/* ---------- LOGIN ---------- */
+/* ---- LOGIN FLOW ---- */
 function openAddAccount() {
   bale.showPopup({
     title: "افزودن اکانت",
     message: `<input id="phoneInput" placeholder="989xxxxxxxxx" style="width:100%;padding:10px"/>`,
     buttons: [
-      { text: "ارسال کد", onClick: sendCode },
+      { text: "ارسال کد", onClick: () => sendCode() },
       { text: "لغو", type: "cancel" }
     ]
   });
@@ -179,6 +181,8 @@ async function sendCode() {
     bale.showToast({ text: "شماره نامعتبر" });
     return;
   }
+
+  currentPhone = phone;
 
   const res = await fetch("https://hunter-api-2x97.onrender.com/login/send-code", {
     method: "POST",
@@ -192,27 +196,27 @@ async function sendCode() {
     return;
   }
 
-  askCode(phone);
+  askForCode();
 }
 
-function askCode(phone) {
+function askForCode() {
   bale.showPopup({
     title: "کد تایید",
     message: `<input id="codeInput" style="width:100%;padding:10px"/>`,
     buttons: [
-      { text: "تایید", onClick: () => verifyCode(phone) },
+      { text: "تایید", onClick: () => verifyCode() },
       { text: "لغو", type: "cancel" }
     ]
   });
 }
 
-async function verifyCode(phone) {
+async function verifyCode() {
   const code = document.getElementById("codeInput").value.trim();
 
   const res = await fetch("https://hunter-api-2x97.onrender.com/login/verify-code", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone, code })
+    body: JSON.stringify({ phone: currentPhone, code })
   });
 
   const data = await res.json();
@@ -226,10 +230,10 @@ async function verifyCode(phone) {
   loadAccounts();
 }
 
-/* ---------- ACCOUNTS ---------- */
+/* ---- ACCOUNTS ---- */
 async function loadAccounts() {
-  const ul = document.getElementById("accounts-list");
-  ul.innerHTML = "⏳";
+  const ul = document.getElementById("accountsList");
+  ul.innerHTML = "<li>⏳ در حال بارگذاری…</li>";
 
   try {
     const res = await fetch("https://hunter-api-2x97.onrender.com/accounts");
@@ -244,12 +248,12 @@ async function loadAccounts() {
 
     data.accounts.forEach(a => {
       const li = document.createElement("li");
-      li.innerHTML = `📱 ${a.phone} — <b style="color:${a.online?'green':'red'}">${a.online?'آنلاین':'آفلاین'}</b>`;
+      li.innerHTML = `📱 ${a.phone} — <b style="color:${a.online ? 'green':'red'}">${a.online ? 'آنلاین':'آفلاین'}</b>`;
       ul.appendChild(li);
     });
 
   } catch {
-    ul.innerHTML = "<li style='color:red'>خطا در دریافت</li>";
+    ul.innerHTML = "<li style='color:red'>خطا در دریافت اکانت‌ها</li>";
   }
 }
 </script>
