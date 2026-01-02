@@ -1,365 +1,248 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>𝑴𝒚 𝑯𝒖𝒏𝒕𝒆𝒓 | شکارچی من</title>
-    <meta name="theme-color" content="#2c3e50"/>
-    
-    <!-- 1. اضافه شدن لینک Font Awesome برای آیکون‌ها -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>𝑴𝒚 𝑯𝒖𝒏𝒕𝒆𝒓 | شکارچی من</title>
 
-    <script src="https://miniapp.bale.ai/sdk.js"></script>
-    
-    <style>
-        /* فونت و استایل کلی */
-        body {
-            font-family: Tahoma, "Arial Black", sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #ecf0f1; /* رنگ پس‌زمینه کمی روشن‌تر */
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+  <meta name="theme-color" content="#2c3e50" />
 
-        /* هدر (Header) */
-        .header {
-            background-color: #2c3e50; /* آبی تیره/سرمه‌ای */
-            color: white;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: bold;
-        }
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
-        /* محتوا (Content Area) */
-        .content {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            text-align: center;
-        }
+  <script src="https://miniapp.bale.ai/sdk.js"></script>
 
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
-        }
-        .page-title {
-            font-size: 26px;
-            margin-bottom: 20px;
-            color: #2980b9; /* آبی روشن‌تر برای عنوان */
-            border-bottom: 2px solid #bdc3c7;
-            padding-bottom: 5px;
-        }
-        .content-card {
-            background-color: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            text-align: right; /* تراز محتوا به راست */
-        }
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      margin: 0;
+      background: #ecf0f1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
 
-        /* نوار ناوبری پایین (Bottom Navigation) - ترتیب معکوس */
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            background-color: white;
-            border-top: 1px solid #ccc;
-            padding: 5px 0;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
-            width: 100%;
-            direction: rtl; 
-            /* **چینش کاملاً معکوس (اطلاعات اول، خانه آخر)** */
-            flex-direction: row-reverse; 
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #7f8c8d;
-            cursor: pointer;
-            padding: 8px 10px;
-            transition: color 0.3s;
-            font-size: 11px;
-            flex: 1; /* برای توزیع یکسان فضا */
-        }
-        .nav-item.active {
-            color: #e74c3c; /* رنگ تاکید قرمز برای فعال */
-        }
-        .nav-item i {
-            font-size: 22px;
-            margin-bottom: 4px;
-        }
-    </style>
+    .header {
+      background: #2c3e50;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .content-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .bottom-nav {
+      display: flex;
+      flex-direction: row-reverse;
+      border-top: 1px solid #ccc;
+      background: #fff;
+    }
+
+    .nav-item {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      cursor: pointer;
+      color: #777;
+    }
+
+    .nav-item.active {
+      color: #e74c3c;
+    }
+  </style>
 </head>
+
 <body>
 
-    <!-- 1. هدر -->
-    <div class="header">
-        <h1>𝑴𝒚 𝑯𝒖𝒏𝒕𝒆𝒓 | شکارچی من</h1>
+<div class="header">
+  <h2>𝑴𝒚 𝑯𝒖𝒏𝒕𝒆𝒓</h2>
+</div>
+
+<div class="content">
+
+  <div id="home-page" class="page active">
+    <div class="content-card">
+      <h3>اکانت‌ها</h3>
+
+      <button onclick="openAddAccount()"
+              style="padding:10px 15px;border-radius:8px;background:#3498db;color:#fff;border:none;">
+        ➕ افزودن اکانت
+      </button>
+
+      <div id="accounts-list" style="margin-top:15px;"></div>
     </div>
+  </div>
 
-    <!-- 2. بخش محتوا -->
-    <div class="content">
-        
-        <!-- صفحه اصلی -->
-        <div id="home-page" class="page active">
-            <p class="page-title">داشبورد اصلی</p>
-            <div class="content-card">
-  <h3>اکانت‌ها</h3>
+  <div id="shop-page" class="page">
+    <div class="content-card">بخش خرید</div>
+  </div>
 
-  <button onclick="openAddAccount()" style="
-    padding:12px 20px;
-    background:#3498db;
-    color:white;
-    border:none;
-    border-radius:8px;
-    font-size:15px;
-    cursor:pointer;">
-    ➕ افزودن اکانت
-  </button>
+  <div id="settings-page" class="page">
+    <div class="content-card">تنظیمات</div>
+  </div>
 
-  <div id="accounts-list" style="margin-top:15px;"></div>
-            </div>
-        </div>
+  <div id="info-page" class="page">
+    <div class="content-card">وضعیت سیستم</div>
+  </div>
 
-        <!-- صفحه خرید -->
-        <div id="shop-page" class="page">
-            <p class="page-title">بخش خرید</p>
-            <div class="content-card">
-                <h3>افزایش منابع</h3>
-                <p>منابع مورد نیاز (مانند اعتبار یا دسترسی) را از این بخش تهیه کنید.</p>
-                <button style="padding: 10px 20px; background-color: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer;">مشاهده پلن‌ها</button>
-            </div>
-        </div>
+</div>
 
-        <!-- صفحه تنظیمات -->
-        <div id="settings-page" class="page">
-            <p class="page-title">تنظیمات کاربری</p>
-            <div class="content-card">
-                <h4>تنظیمات اصلی</h4>
-                <ul>
-                    <li>تغییر رمز عبور</li>
-                    <li>مدیریت توکن‌ها</li>
-                    <li>تنظیمات نوتیفیکیشن</li>
-                </ul>
-            </div>
-        </div>
-        
-        <!-- صفحه اطلاعات (جدید) -->
-        <div id="info-page" class="page">
-            <p class="page-title">وضعیت سیستم</p>
-            <div class="content-card">
-                <h4>جزئیات فنی</h4>
-                <p><strong>نسخه اپلیکیشن:</strong> 1.2.0</p>
-                <p><strong>وضعیت اتصال:</strong> متصل (۲ سرور فعال)</p>
-                <p>آخرین عملیات موفق: 5 دقیقه پیش.</p>
-            </div>
-        </div>
-    </div>
+<div class="bottom-nav">
+  <div class="nav-item" data-page="home-page"><i class="fas fa-house"></i><br>خانه</div>
+  <div class="nav-item" data-page="shop-page"><i class="fas fa-cart"></i><br>خرید</div>
+  <div class="nav-item" data-page="settings-page"><i class="fas fa-gear"></i><br>تنظیمات</div>
+  <div class="nav-item" data-page="info-page"><i class="fas fa-circle-info"></i><br>اطلاعات</div>
+</div>
 
-    <!-- 3. نوار منوی پایین - ترتیب معکوس اعمال شده است -->
-    <div class="bottom-nav">
-        
-        <!-- ترتیب HTML: 1. info, 2. settings, 3. shop, 4. home -->
-        <!-- به دلیل flex-direction: row-reverse؛ نمایش: 1. home, 2. shop, 3. settings, 4. info (اشتباه) -->
-        <!-- اصلاح: ترتیب نمایش در نوار باید با ترتیب درخواستی شما (اطلاعات، تنظیمات، خرید، خانه) مطابقت داشته باشد -->
-        
-        <!-- آیتم 1: صفحه اصلی (در سمت چپ نهایی) -->
-        <div class="nav-item" data-page="home-page">
-            <i class="fas fa-house"></i>
-            صفحه اصلی
-        </div>
-        
-        <!-- آیتم 2: صفحه خرید -->
-        <div class="nav-item" data-page="shop-page">
-            <i class="fas fa-cart-shopping"></i>
-            خرید
-        </div>
-        
-        <!-- آیتم 3: صفحه تنظیمات -->
-        <div class="nav-item" data-page="settings-page">
-            <i class="fas fa-gear"></i>
-            تنظیمات
-        </div>
-        
-        <!-- آیتم 4: صفحه اطلاعات (در سمت راست نهایی) -->
-        <div class="nav-item" data-page="info-page">
-            <i class="fas fa-circle-info"></i>
-            اطلاعات
-        </div>
-        
-    </div>
+<script>
+const API_BASE = "https://hunter-api-2x97.onrender.com";
+let loginInProgress = false;
 
-    <script>
-  document.addEventListener('DOMContentLoaded', function () {
-  if (window.bale?.ready) {
-    bale.ready();
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  bale.ready();
 
-  const navItems = document.querySelectorAll('.nav-item');
-  const pages = document.querySelectorAll('.page');
-
-  function switchPage(pageId) {
-    pages.forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId)?.classList.add('active');
-
-    navItems.forEach(item => {
-      item.classList.toggle(
-        'active',
-        item.getAttribute('data-page') === pageId
-      );
-    });
-  }
-
-  navItems.forEach(item => {
-    item.addEventListener('click', () =>
-      switchPage(item.getAttribute('data-page'))
-    );
+  document.querySelectorAll(".nav-item").forEach(item => {
+    item.onclick = () => switchPage(item.dataset.page);
   });
 
-  switchPage('home-page');
+  switchPage("home-page");
   loadAccounts();
 });
 
-  function openAddAccount() {
-    bale.showPopup({
-      title: "افزودن اکانت",
-      message: `
-        <input id="phoneInput" placeholder="989xxxxxxxxx"
-          style="width:100%;padding:10px;border-radius:6px;border:1px solid #ccc"/>
-      `,
-      buttons: [
-        { text: "ارسال کد", type: "default", onClick: sendCodeFromPopup },
-        { text: "لغو", type: "cancel" }
-      ]
-    });
-  }
+function switchPage(id) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 
-let loginInProgress = false;
+  document.querySelectorAll(".nav-item").forEach(i =>
+    i.classList.toggle("active", i.dataset.page === id)
+  );
+}
 
-async function sendCodeFromPopup() {
+/* ---------- LOGIN ---------- */
+
+function openAddAccount() {
+  bale.showPopup({
+    title: "افزودن اکانت",
+    message: `<input id="phoneInput" placeholder="989xxxxxxxxx"
+      style="width:100%;padding:10px">`,
+    buttons: [
+      { text: "ارسال کد", type: "default", onClick: sendCode },
+      { text: "لغو", type: "cancel" }
+    ]
+  });
+}
+
+async function sendCode() {
   if (loginInProgress) return;
   loginInProgress = true;
 
-  const phone = document.getElementById("phoneInput")?.value?.trim();
-
+  const phone = document.getElementById("phoneInput").value.trim();
   if (!/^989\d{9}$/.test(phone)) {
     loginInProgress = false;
-    bale.showPopup({
-      title: "❌ خطا",
-      message: "شماره تلفن معتبر نیست"
-    });
-    return;
+    return bale.showToast({ text: "شماره نامعتبر" });
   }
 
   try {
-    const res = await fetch(
-      "https://hunter-api-2x97.onrender.com/login/send-code",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone })
-      }
-    );
+    const res = await bale.request({
+      url: API_BASE + "/login/send-code",
+      method: "POST",
+      data: { phone }
+    });
 
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error);
+    if (!res.data.ok) throw new Error(res.data.error);
 
     bale.showToast({ text: "کد ارسال شد" });
-    loginInProgress = false;
     askForCode(phone);
 
-  } catch (err) {
-    loginInProgress = false;
-    bale.showPopup({
-      title: "❌ خطا",
-      message: err.message
-    });
-  }
-                          }
-
-  function askForCode(phone) {
-    bale.showPopup({
-      title: "کد تایید",
-      message: `
-        <input id="codeInput" placeholder="کد تایید"
-          style="width:100%;padding:10px;border-radius:6px;border:1px solid #ccc"/>
-      `,
-      buttons: [
-        { text: "تایید", type: "default", onClick: () => verifyCode(phone) },
-        { text: "لغو", type: "cancel" }
-      ]
-    });
+  } catch (e) {
+    bale.showPopup({ title: "خطا", message: e.message });
   }
 
-  async function verifyCode(phone) {
-  const code = document.getElementById("codeInput")?.value?.trim();
+  loginInProgress = false;
+}
+
+function askForCode(phone) {
+  bale.showPopup({
+    title: "کد تایید",
+    message: `<input id="codeInput" placeholder="کد تایید"
+      style="width:100%;padding:10px">`,
+    buttons: [
+      { text: "تایید", type: "default", onClick: () => verifyCode(phone) },
+      { text: "لغو", type: "cancel" }
+    ]
+  });
+}
+
+async function verifyCode(phone) {
+  const code = document.getElementById("codeInput").value.trim();
   if (!code) return;
 
   try {
-    const res = await fetch(
-      "https://hunter-api-2x97.onrender.com/login/verify-code",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, code })
-      }
-    );
+    const res = await bale.request({
+      url: API_BASE + "/login/verify-code",
+      method: "POST",
+      data: { phone, code }
+    });
 
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error);
+    if (!res.data.ok) throw new Error(res.data.error);
 
-    bale.closePopup?.();
+    bale.closePopup();
     bale.showToast({ text: "اکانت اضافه شد" });
-
     loadAccounts();
-  } catch (err) {
-    bale.showPopup({ title: "❌ خطا", message: err.message });
-  }
-      }
 
-  async function loadAccounts() {
+  } catch (e) {
+    bale.showPopup({ title: "خطا", message: e.message });
+  }
+}
+
+/* ---------- ACCOUNTS ---------- */
+
+async function loadAccounts() {
   const box = document.getElementById("accounts-list");
   box.innerHTML = "⏳ در حال بارگذاری...";
 
   try {
-    const res = await fetch("https://hunter-api-2x97.onrender.com/accounts");
-    if (!res.ok) throw new Error();
+    const res = await bale.request({
+      url: API_BASE + "/accounts",
+      method: "GET"
+    });
 
-    const data = await res.json();
     box.innerHTML = "";
 
-    if (!data.accounts?.length) {
-      box.innerHTML = "<p>هیچ اکانتی ثبت نشده</p>";
+    if (!res.data.accounts.length) {
+      box.innerHTML = "اکانتی ثبت نشده";
       return;
     }
 
-    data.accounts.forEach(acc => {
-      const div = document.createElement("div");
-      div.style =
-        "padding:10px;margin-top:8px;background:#f4f4f4;border-radius:6px;";
-      div.innerHTML = `📱 ${acc.phone}
-        <span style="color:${acc.online ? 'green' : 'red'}">
-          (${acc.online ? 'آنلاین' : 'آفلاین'})
-        </span>`;
-      box.appendChild(div);
+    res.data.accounts.forEach(a => {
+      box.innerHTML += `
+        <div style="margin-top:6px">
+          📱 ${a.phone}
+          <span style="color:${a.online ? 'green' : 'red'}">
+            (${a.online ? 'آنلاین' : 'آفلاین'})
+          </span>
+        </div>`;
     });
+
   } catch {
-    box.innerHTML = "<p style='color:red'>خطا در دریافت اکانت‌ها</p>";
+    box.innerHTML = "<span style='color:red'>خطا در دریافت</span>";
   }
-                            }
+}
 </script>
 
 </body>
-</html>
+    </html>
