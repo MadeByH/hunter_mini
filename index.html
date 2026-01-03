@@ -196,7 +196,7 @@
     if (WebApp) {
       WebApp.ready();
       WebApp.expand();
-      WebApp.BackButton.show();
+      WebApp.BackButton.show("close");
     } else {
       alert("MiniApp API در دسترس نیست");
     }
@@ -214,7 +214,7 @@
     }
 
     navItems.forEach(n => n.addEventListener('click', () => switchPage(n.dataset.page)));
-    WebApp?.BackButton?.onClick(() => switchPage('home-page'));
+    WebApp.BackButton.onClick(() => WebApp.close());
 
     /* ============== Modal Logic ============== */
     function openAddAccount() {
@@ -225,28 +225,35 @@
     }
 
     /* ============== Send Code Logic ============== */
-    async function sendCode() {
-      const phone = document.getElementById('phoneInput')?.value?.trim();
-      if (!/^989\d{9}$/.test(phone)) {
-        WebApp?.showAlert("شماره تلفن نامعتبر است");
-        return;
-      }
+    function isValidPhone(phone) {
+  // تبدیل "09..." به قالب بین‌المللی
+  if (phone.startsWith("09")) phone = "98" + phone.slice(1);
+  return /^989\d{9}$/.test(phone);
+}
 
-      try {
-        const res = await fetch("https://hunter-api-2x97.onrender.com/login/send-code", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone, user_id: user?.id })
-        });
+async function sendCode() {
+  let phone = document.getElementById("phoneInput")?.value?.trim();
+  if (!isValidPhone(phone)) {
+    const msg = "شماره تلفن اشتباه است، باید مثلاً به صورت 989xxxxxxxxx باشد";
+    WebApp?.showAlert(msg) || alert(msg);
+    return;
+  }
 
-        const data = await res.json();
-        if (!data.ok) throw new Error(data.error || "خطا در ارسال کد");
+  // ادامه ارسال
+  try {
+    const res = await fetch("https://hunter-api-2x97.onrender.com/login/send-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, user_id: user?.id })
+    });
 
-        askForCode(phone);
-      } catch (e) {
-        WebApp?.showAlert(e.message || "خطا در ارتباط با سرور");
-      }
-    }
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || "خطا در ارسال کد");
+    askForCode(phone);
+  } catch (e) {
+    WebApp?.showAlert(e.message || "خطا در ارتباط با سرور") || alert(e.message);
+  }
+}
 
     /* ============== Code Verify Popup ============== */
     function askForCode(phone) {
