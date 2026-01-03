@@ -56,6 +56,7 @@
       border-radius: 8px;
       text-align: center;
       user-select: none;
+      cursor: pointer; /* برای قابل کلیک بودن اضافه شد */
     }
 
     .bottom-nav {
@@ -102,6 +103,7 @@
       padding: 16px;
       border-radius: 10px;
       width: 85%;
+      max-width: 400px; /* برای محدود کردن عرض در صفحه بزرگ */
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
@@ -117,6 +119,8 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
+      direction: ltr; /* تنظیم جهت برای ورودی‌های عددی */
+      text-align: left;
     }
 
     #addModal .btn-row {
@@ -182,7 +186,7 @@
   <div id="addModal">
     <div class="modal-content">
       <h3>افزودن اکانت</h3>
-      <input id="phoneInput" placeholder="مثلاً 989xxxxxxxxx">
+      <input id="phoneInput" placeholder="مثلاً 989xxxxxxxxx" dir="ltr" type="tel">
       <div class="btn-row">
         <div class="add-btn" ontouchstart="sendCode()">ارسال کد</div>
         <div class="add-btn cancel" ontouchstart="closeModal()">لغو</div>
@@ -191,17 +195,19 @@
   </div>
 
   <script>
-    /* ============== Init Bale MiniApp ============== */
+    /* ============== Init Bale MiniApp & Globals ============== */
     const WebApp = window.Bale?.WebApp;
+    
     if (WebApp) {
       WebApp.ready();
       WebApp.expand();
       WebApp.BackButton.show("close");
     } else {
-      alert("MiniApp API در دسترس نیست");
+      // برای تست خارج از بله
+      console.error("MiniApp API در دسترس نیست. برای تست از شبیه‌ساز استفاده کنید.");
     }
 
-    const API_BASE = "https://hunter-api-2x97.onrender.com";
+    const API_BASE = "https://hunter-api-2x97.onrender.com"; // 👈 این حالا تعریف شده است.
     
     const user = WebApp?.initDataUnsafe?.user;
     
@@ -216,104 +222,120 @@
     }
 
     navItems.forEach(n => n.addEventListener('click', () => switchPage(n.dataset.page)));
-    WebApp.BackButton.onClick(() => WebApp.close());
+    
+    // اصلاح دکمه برگشت
+    if (WebApp) {
+        WebApp.BackButton.onClick(() => WebApp.close());
+    }
 
     /* ============== Modal Logic ============== */
     function openAddAccount() {
       document.getElementById("addModal").style.display = "flex";
+      document.getElementById("phoneInput").value = ""; // پاک کردن ورودی قبلی
     }
     function closeModal() {
       document.getElementById("addModal").style.display = "none";
     }
 
-    /* ============== Send Code Logic ============== */
+    /* ============== Validation & Send Code Logic ============== */
     function isValidPhone(phone) {
-  // تبدیل "09..." به قالب بین‌المللی
-  if (phone.startsWith("09")) phone = "98" + phone.slice(1);
-  return /^989\d{9}$/.test(phone);
-}
+        // تبدیل "09..." به قالب بین‌المللی
+        if (phone.startsWith("09")) phone = "98" + phone.slice(1);
+        // الگوی صحیح: 989 (11 رقم بعد از آن)
+        return /^989\d{9}$/.test(phone);
+    }
 
-async function sendCode() {
-  let phone = document.getElementById("phoneInput").value.trim();
+    async function sendCode() {
+      let phone = document.getElementById("phoneInput").value.trim();
 
-  if (!isValidPhone(phone)) {
-    WebApp.showAlert("شماره تلفن اشتباه است");
-    return;
-  }
-
-  const body = {
-    phone,
-    owner_id: user?.id || 0  // 👈 اینجا owner_id از Bale می‌آید
-  };
-
-  const res = await fetch(API_BASE + "/login/send-code", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(body)
-  });
-  const data = await res.json();
-
-  if (!data.ok) {
-    WebApp.showAlert("خطا: " + data.error);
-    return;
-  }
-
-  switchPage("verify-page");
-}
+      if (!isValidPhone(phone)) {
+        WebApp.showAlert("شماره تلفن نامعتبر است. لطفاً با ۰۹ شروع کرده و ۱۱ رقم وارد کنید.");
+        return;
+      }
+      
+      // در صورت اعتبارسنجی صحیح، پاپ‌آپ کد را نمایش می‌دهیم
+      // این کار باعث می‌شود که از منطق صفحه جدید اجتناب کنیم و از پاپ‌آپ استفاده کنیم (ساده‌تر)
+      closeModal(); // بستن مودال شماره تلفن
+      askForCode(phone); // نمایش پاپ‌آپ کد تایید
+    }
 
     /* ============== Code Verify Popup ============== */
     function askForCode(phone) {
+      // ما phone را اینجا نگه داشتیم تا نیازی به خواندن مجدد از input نداشته باشیم
       WebApp?.showPopup({
-        title: "کد تایید",
+        title: "تایید شماره: " + phone.substring(0, 4) + "*******",
         message: `
+          <p>کد ارسالی به ${phone} را وارد نمایید:</p>
           <input id="codeInput"
-            style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px">
+            style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;text-align:center;direction:ltr;" 
+            placeholder="کد ۴ رقمی (یا بیشتر)">
         `,
         buttons: [
           { id: "ok", type: "default", text: "تایید" },
           { id: "cancel", type: "cancel", text: "لغو" }
         ]
-      }, (btnId) => btnId === "ok" && verifyCode(phone));
+      }, (btnId) => {
+          if (btnId === "ok") {
+              verifyCode(phone); // ارسال شماره موبایل تایید شده
+          }
+      });
     }
 
     /* ============== Verify Code ============== */
-    async function verifyCode() {
-  let code = document.getElementById("codeInput").value.trim();
-  let phone = document.getElementById("phoneInput").value.trim();
+    async function verifyCode(phone) {
+        const codeInput = document.getElementById("codeInput");
+        if (!codeInput) return;
+        
+        let code = codeInput.value.trim();
+        
+        if (!code) {
+            WebApp.showAlert("لطفاً کد را وارد نمایید.");
+            return;
+        }
 
-  const body = {
-    phone,
-    code,
-    owner_id: user?.id || 0  // 👈 دوباره از Bale گرفته می‌شود
-  };
+        const body = {
+            phone,
+            code,
+            owner_id: user?.id || 0  // 👈 owner_id از Bale
+        };
 
-  const res = await fetch(API_BASE + "/login/verify-code", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(body)
-  });
-  const data = await res.json();
+        // 👈 در اینجا به دلیل اطمینان از بستن کانکشن، فراخوانی را درون try/catch می‌گذاریم
+        try {
+            const res = await fetch(API_BASE + "/login/verify-code", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
 
-  if (data.ok) {
-    WebApp.showAlert("✅ حساب فعال شد!");
-    switchPage("accounts-page");
-  } else {
-    WebApp.showAlert("❌ " + data.error);
-  }
-           }
+            if (data.ok) {
+                WebApp.showAlert("✅ حساب شما با موفقیت فعال شد!");
+                loadAccounts(); // لیست اکانت‌ها را به‌روز می‌کنیم
+            } else {
+                WebApp.showAlert("❌ خطا در تایید: " + data.error);
+            }
+        } catch (error) {
+            WebApp.showAlert("❌ خطای شبکه یا سرور: " + error.message);
+        }
+    }
     
     /* ============== Load Accounts ============== */
     async function loadAccounts() {
       const ul = document.getElementById('accounts-list');
-      ul.innerHTML = "⏳";
+      ul.innerHTML = "<li>⏳ در حال بارگذاری اکانت‌ها...</li>";
+
+      if (!user?.id) {
+          ul.innerHTML = "<li>⚠️ امکان دریافت اکانت‌ها بدون `owner_id` وجود ندارد.</li>";
+          return;
+      }
 
       try {
-        const res = await fetch(`https://hunter-api-2x97.onrender.com/accounts?user_id=${user?.id}`);
+        const res = await fetch(`${API_BASE}/accounts?user_id=${user.id}`);
         const data = await res.json();
 
         ul.innerHTML = "";
-        if (!data.accounts?.length) {
-          ul.innerHTML = "<li>اکانتی ثبت نشده</li>";
+        if (!data.accounts || !data.accounts.length) {
+          ul.innerHTML = "<li>اکانتی ثبت نشده است.</li>";
           return;
         }
 
@@ -322,12 +344,16 @@ async function sendCode() {
           li.textContent = `📱 ${a.phone} (${a.online ? 'آنلاین' : 'آفلاین'})`;
           ul.appendChild(li);
         });
-      } catch {
-        ul.innerHTML = "<li style='color:red'>خطا در دریافت اکانت‌ها</li>";
+      } catch (e) {
+        console.error(e);
+        ul.innerHTML = "<li style='color:red'>خطا در برقراری ارتباط با سرور برای دریافت لیست اکانت‌ها.</li>";
       }
     }
 
-    loadAccounts();
+    // اجرای اولیه
+    if (WebApp) {
+        loadAccounts();
+    }
   </script>
 </body>
 </html>
