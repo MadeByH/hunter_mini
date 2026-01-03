@@ -194,6 +194,18 @@
     </div>
   </div>
 
+    <!-- Modal کد تایید -->
+  <div id="verifyModal">
+    <div class="modal-content">
+      <h3 id="verifyModalTitle"></h3>
+      <input id="codeInputInternal" placeholder="کد ۶ رقمی" dir="ltr" type="tel" maxlength="6">
+      <div class="btn-row">
+        <div class="add-btn" ontouchstart="handleVerifySubmit()">تایید</div>
+        <div class="add-btn cancel" ontouchstart="closeVerifyModal()">لغو</div>
+      </div>
+    </div>
+  </div>
+
   <script>
     /* ============== Init Bale MiniApp & Globals ============== */
     const WebApp = window.Bale?.WebApp;
@@ -208,6 +220,7 @@
     }
 
     const API_BASE = "https://hunter-api-2x97.onrender.com"; // 👈 این حالا تعریف شده است.
+    let currentPhone = "";
     
     const user = WebApp?.initDataUnsafe?.user;
     
@@ -237,6 +250,22 @@
       document.getElementById("addModal").style.display = "none";
     }
 
+        /* ============== Code Verify Modal Logic ============== */
+    function openVerifyAccount(phone) {
+      const formattedPhone = phone.substring(0, 4) + "*******" + phone.substring(10);
+      document.getElementById("verifyModalTitle").textContent = "تایید کد برای: " + formattedPhone;
+      document.getElementById("codeInputInternal").value = ""; // پاک کردن ورودی قبلی
+      document.getElementById("verifyModal").style.display = "flex";
+    }
+    function closeVerifyModal() {
+      document.getElementById("verifyModal").style.display = "none";
+    }
+
+    function handleVerifySubmit() {
+        // این تابع جایگزین فراخوانی مستقیم در کال‌بک پاپ‌آپ بله می‌شود.
+        verifyCodeFromModal();
+    }
+    
     /* ============== Validation & Send Code Logic ============== */
     function isValidPhone(phone) {
         // تبدیل "09..." به قالب بین‌المللی
@@ -253,10 +282,9 @@
         return;
       }
       
-      // در صورت اعتبارسنجی صحیح، پاپ‌آپ کد را نمایش می‌دهیم
-      // این کار باعث می‌شود که از منطق صفحه جدید اجتناب کنیم و از پاپ‌آپ استفاده کنیم (ساده‌تر)
       closeModal(); // بستن مودال شماره تلفن
-      askForCode(phone); // نمایش پاپ‌آپ کد تایید
+      window.currentPhone = phone; // 👈 ذخیره شماره تلفن
+      openVerifyAccount(phone); // 👈 نمایش مودال سفارشی کد تایید
     }
 
     /* ============== Code Verify Popup ============== */
@@ -281,9 +309,15 @@
       });
     }
 
-    /* ============== Verify Code ============== */
-    async function verifyCode(phone) {
-        const codeInput = document.getElementById("codeInput");
+        /* ============== Verify Code (FROM MODAL) ============== */
+    async function verifyCodeFromModal() {
+        // ما باید شماره تلفن را از جایی بگیریم. بهترین راه، ذخیره آن در یک متغیر سراسری است.
+        // برای سادگی فعلی، فرض می‌کنیم شما یک متغیر سراسری به نام 'currentPhone' تعریف کرده‌اید.
+        
+        // **توجه: برای پیاده‌سازی کامل، نیاز است شماره تلفن در متغیر سراسری ذخیره شود.**
+        const phone = window.currentPhone; // باید تعریف شود
+        
+        const codeInput = document.getElementById("codeInputInternal");
         if (!codeInput) return;
         
         let code = codeInput.value.trim();
@@ -292,14 +326,15 @@
             alert("لطفاً کد را وارد نمایید.");
             return;
         }
+        
+        closeVerifyModal(); // بستن مودال کد
 
         const body = {
             phone,
             code,
-            owner_id: user?.id || 0  // 👈 owner_id از Bale
+            owner_id: user?.id || 0
         };
 
-        // 👈 در اینجا به دلیل اطمینان از بستن کانکشن، فراخوانی را درون try/catch می‌گذاریم
         try {
             const res = await fetch(API_BASE + "/login/verify-code", {
                 method: "POST",
@@ -310,12 +345,15 @@
 
             if (data.ok) {
                 alert("✅ حساب شما با موفقیت فعال شد!");
-                loadAccounts(); // لیست اکانت‌ها را به‌روز می‌کنیم
+                loadAccounts();
             } else {
-                WebApp.showAlert("❌ خطا در تایید: " + data.error);
+                // اگر خطا داد، مودال را دوباره باز کنیم و خطا را نمایش دهیم
+                openVerifyAccount(phone); // دوباره باز شود
+                alert("❌ خطا در تایید: " + data.error);
             }
         } catch (error) {
-            WebApp.showAlert("❌ خطای شبکه یا سرور: " + error.message);
+            openVerifyAccount(phone); // دوباره باز شود
+            alert("❌ خطای شبکه یا سرور: " + error.message);
         }
     }
     
