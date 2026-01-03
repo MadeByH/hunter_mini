@@ -202,6 +202,7 @@
     }
 
     const user = WebApp?.initDataUnsafe?.user;
+    const user = WebApp.initDataUnsafe?.user;
 
     /* ============== Navigation ============== */
     const pages = document.querySelectorAll('.page');
@@ -232,27 +233,31 @@
 }
 
 async function sendCode() {
-  let phone = document.getElementById("phoneInput")?.value?.trim();
+  let phone = document.getElementById("phoneInput").value.trim();
+
   if (!isValidPhone(phone)) {
-    const msg = "شماره تلفن اشتباه است، باید مثلاً به صورت 989xxxxxxxxx باشد";
-    WebApp?.showAlert(msg) || alert(msg);
+    WebApp.showAlert("شماره تلفن اشتباه است");
     return;
   }
 
-  // ادامه ارسال
-  try {
-    const res = await fetch("https://hunter-api-2x97.onrender.com/login/send-code", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, user_id: user?.id })
-    });
+  const body = {
+    phone,
+    owner_id: user?.id || 0  // 👈 اینجا owner_id از Bale می‌آید
+  };
 
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error || "خطا در ارسال کد");
-    askForCode(phone);
-  } catch (e) {
-    WebApp?.showAlert(e.message || "خطا در ارتباط با سرور") || alert(e.message);
+  const res = await fetch(API_BASE + "/login/send-code", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+
+  if (!data.ok) {
+    WebApp.showAlert("خطا: " + data.error);
+    return;
   }
+
+  switchPage("verify-page");
 }
 
     /* ============== Code Verify Popup ============== */
@@ -271,28 +276,31 @@ async function sendCode() {
     }
 
     /* ============== Verify Code ============== */
-    async function verifyCode(phone) {
-      const code = document.getElementById('codeInput')?.value?.trim();
-      if (!code) return;
+    async function verifyCode() {
+  let code = document.getElementById("codeInput").value.trim();
+  let phone = document.getElementById("phoneInput").value.trim();
 
-      try {
-        const res = await fetch("https://hunter-api-2x97.onrender.com/login/verify-code", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone, code, user_id: user?.id })
-        });
+  const body = {
+    phone,
+    code,
+    owner_id: user?.id || 0  // 👈 دوباره از Bale گرفته می‌شود
+  };
 
-        const data = await res.json();
-        if (!data.ok) throw new Error(data.error || "کد نادرست است");
+  const res = await fetch(API_BASE + "/login/verify-code", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
 
-        WebApp?.showAlert("اکانت اضافه شد ✅");
-        closeModal();
-        loadAccounts();
-      } catch (e) {
-        WebApp?.showAlert(e.message || "خطا در تایید کد");
-      }
-    }
-
+  if (data.ok) {
+    WebApp.showAlert("✅ حساب فعال شد!");
+    switchPage("accounts-page");
+  } else {
+    WebApp.showAlert("❌ " + data.error);
+  }
+           }
+    
     /* ============== Load Accounts ============== */
     async function loadAccounts() {
       const ul = document.getElementById('accounts-list');
