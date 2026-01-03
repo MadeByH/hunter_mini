@@ -204,7 +204,7 @@
       WebApp.BackButton.show("close");
     } else {
       // برای تست خارج از بله
-      console.error("MiniApp API در دسترس نیست. برای تست از شبیه‌ساز استفاده کنید.");
+      alert("MiniApp API در دسترس نیست. برای تست از شبیه‌ساز استفاده کنید.");
     }
 
     const API_BASE = "https://hunter-api-2x97.onrender.com"; // 👈 این حالا تعریف شده است.
@@ -249,7 +249,7 @@
       let phone = document.getElementById("phoneInput").value.trim();
 
       if (!isValidPhone(phone)) {
-        WebApp.showAlert("شماره تلفن نامعتبر است. لطفاً با ۰۹ شروع کرده و ۱۱ رقم وارد کنید.");
+        alert("شماره تلفن نامعتبر است. لطفاً با ۰۹ شروع کرده و ۱۱ رقم وارد کنید.");
         return;
       }
       
@@ -268,7 +268,7 @@
           <p>کد ارسالی به ${phone} را وارد نمایید:</p>
           <input id="codeInput"
             style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;text-align:center;direction:ltr;" 
-            placeholder="کد ۴ رقمی (یا بیشتر)">
+            placeholder="کد ۶ رقمی">
         `,
         buttons: [
           { id: "ok", type: "default", text: "تایید" },
@@ -289,7 +289,7 @@
         let code = codeInput.value.trim();
         
         if (!code) {
-            WebApp.showAlert("لطفاً کد را وارد نمایید.");
+            alert("لطفاً کد را وارد نمایید.");
             return;
         }
 
@@ -309,7 +309,7 @@
             const data = await res.json();
 
             if (data.ok) {
-                WebApp.showAlert("✅ حساب شما با موفقیت فعال شد!");
+                alert("✅ حساب شما با موفقیت فعال شد!");
                 loadAccounts(); // لیست اکانت‌ها را به‌روز می‌کنیم
             } else {
                 WebApp.showAlert("❌ خطا در تایید: " + data.error);
