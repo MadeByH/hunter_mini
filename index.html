@@ -307,7 +307,7 @@
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       phone,
-      init_data: WebApp.initData
+      owner_id: user.id
     })
   });
 
@@ -358,7 +358,7 @@
     body: JSON.stringify({
       phone: window.currentPhone,
       code,
-      init_data: WebApp.initData
+      owner_id: user.id
     })
   });
 
