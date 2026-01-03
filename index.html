@@ -302,7 +302,7 @@
     return;
   }
 
-  await fetch(API_BASE + "/login/send-code", {
+  const res = await fetch(API_BASE + "/login/send-code", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -311,8 +311,17 @@
     })
   });
 
+  const data = await res.json();
+
+  if (!data.ok) {
+    alert("❌ خطا: " + data.error);
+    return;
+  }
+
+  window.currentPhone = phone;   // ⭐️ خیلی مهم
+  closeModal();
   openVerifyAccount(phone);
-    }
+      }
 
     /* ============== Code Verify Popup ============== */
     function askForCode(phone) {
