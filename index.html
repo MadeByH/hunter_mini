@@ -19,7 +19,6 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
-      touch-action: manipulation;
     }
     .header {
       background: #2c3e50;
@@ -44,6 +43,15 @@
       margin-bottom: 16px;
     }
 
+    .add-btn {
+  padding: 10px 16px;
+  background: #3498db;
+  color: #fff;
+  border-radius: 8px;
+  text-align: center;
+  user-select: none;
+    }
+    
     .bottom-nav {
       display: flex;
       border-top: 1px solid #ccc;
@@ -78,11 +86,12 @@
   <div id="home-page" class="page active">
     <div class="content-card">
       <h3>اکانت‌ها</h3>
-      <button
-  onclick="openAddAccount()"
-  style="padding:10px 16px;background:#3498db;color:#fff;border:none;border-radius:8px;">
+      <div
+  class="add-btn"
+  ontouchstart="openAddAccount()"
+>
   ➕ افزودن اکانت
-      </button>
+      </div>
       <ul id="accounts-list"></ul>
     </div>
   </div>
