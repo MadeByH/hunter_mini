@@ -19,6 +19,7 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
+      touch-action: manipulation;
     }
     .header {
       background: #2c3e50;
@@ -118,11 +119,14 @@
 <script>
 /* ================= MiniApp Init ================= */
 const WebApp = window.Bale?.WebApp;
+
 if (!WebApp) {
   alert("MiniApp API در دسترس نیست");
+} else {
+  WebApp.ready();
+  WebApp.expand();
+  WebApp.BackButton.show();
 }
-WebApp.ready();
-WebApp.expand();
 
 const user = WebApp.initDataUnsafe?.user;
 
