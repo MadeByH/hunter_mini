@@ -234,7 +234,7 @@
       <h3>افزودن اکانت</h3>
       <input id="phoneInput" placeholder="مثلاً 989xxxxxxxxx" dir="ltr" type="tel">
       <div class="btn-row">
-        <div class="add-btn" ontouchstart="sendCode()">ارسال کد</div>
+        <div class="add-btn" id="sendCodeBtn" ontouchstart="sendCode()">ارسال کد</div>
         <div class="add-btn cancel" ontouchstart="closeModal()">لغو</div>
       </div>
     </div>
@@ -325,14 +325,18 @@
     }
 
     async function sendCode() {
-  const phone = document.getElementById("phoneInput").value.trim();
+  const btn = document.getElementById("sendCodeBtn");
+  btn.style.pointerEvents = "none";
+  btn.style.opacity = "0.6";
 
-  if (!/^989\d{9}$/.test(phone)) {
-    alert("شماره نامعتبر است");
-    return;
-  }
+  try {
+    const phone = document.getElementById("phoneInput").value.trim();
+    if (!/^989\d{9}$/.test(phone)) {
+      alert("شماره نامعتبر است");
+      return;
+    }
 
-  const res = await fetch(API_BASE + "/login/send-code", {
+    const res = await fetch(API_BASE + "/login/send-code", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -340,18 +344,23 @@
       owner_id: user.id
     })
   });
+ 
+    const data = await res.json();
 
-  const data = await res.json();
+    if (!data.ok) {
+      alert("❌ " + data.error);
+      return;
+    }
 
-  if (!data.ok) {
-    alert("❌ خطا: " + data.error);
-    return;
+    window.currentPhone = phone;
+    closeModal();
+    openVerifyAccount(phone);
+
+  } finally {
+    btn.style.pointerEvents = "auto";
+    btn.style.opacity = "1";
   }
-
-  window.currentPhone = phone;   // ⭐️ خیلی مهم
-  closeModal();
-  openVerifyAccount(phone);
-      }
+    }
 
         /* ============== Verify Code (FROM MODAL) ============== */
     async function verifyCodeFromModal() {
