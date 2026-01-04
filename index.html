@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>𝑴𝒚 𝑯𝒖𝒏𝒕𝒆𝒓 | شکارچی من</title>
   <meta name="theme-color" content="#2c3e50"/>
 
@@ -94,6 +94,7 @@
       inset: 0;
       background: rgba(0,0,0,0.5);
       z-index: 999;
+      display: flex;
       align-items: center;
       justify-content: center;
     }
@@ -142,6 +143,7 @@
   inset: 0;
   background: rgba(0,0,0,0.5);
   z-index: 1000;
+  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -154,6 +156,30 @@
   max-width: 400px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
+
+    #verifyModal input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;        /* خواناتر */
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  text-align: center;
+  direction: ltr;
+  margin-bottom: 14px;
+}
+
+    #verifyModal .btn-row {
+  display: flex;
+  gap: 10px;
+}
+
+    #verifyModal .add-btn {
+  flex: 1;
+  padding: 10px 0;        /* دکمه‌ها کوچیک‌تر */
+  font-size: 14px;
+}
+    
   </style>
 </head>
 
@@ -266,8 +292,11 @@
 
     /* ============== Modal Logic ============== */
     function openAddAccount() {
-      document.getElementById("addModal").style.display = "flex";
-      document.getElementById("phoneInput").value = ""; // پاک کردن ورودی قبلی
+  const modal = document.getElementById("addModal");
+  modal.style.display = "flex";
+  const input = document.getElementById("phoneInput");
+  input.value = "";
+  setTimeout(() => input.focus(), 200);
     }
     function closeModal() {
       document.getElementById("addModal").style.display = "none";
@@ -277,8 +306,8 @@
     function openVerifyAccount(phone) {
       const formattedPhone = phone.substring(0, 4) + "*******" + phone.substring(10);
       document.getElementById("verifyModalTitle").textContent = "تایید کد برای: " + formattedPhone;
-      document.getElementById("codeInputInternal").value = ""; // پاک کردن ورودی قبلی
       document.getElementById("verifyModal").style.display = "flex";
+        setTimeout(() => document.getElementById("codeInputInternal").focus(), 200);
     }
     function closeVerifyModal() {
       document.getElementById("verifyModal").style.display = "none";
