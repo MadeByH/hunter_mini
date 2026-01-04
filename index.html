@@ -415,6 +415,10 @@
   📱 ${a.phone} (${a.online ? "آنلاین" : "آفلاین"})
   <span style="float:left;color:red;cursor:pointer"
         onclick="removeAccount('${a.phone}')">🗑</span>
+
+        <input type="checkbox"
+  ${a.online ? "checked" : ""}
+  onchange="toggleBot('${a.phone}')">
 `;
           ul.appendChild(li);
         });
@@ -438,6 +442,14 @@
     return;
   }
 
+  loadAccounts();
+    }
+
+
+    async function toggleBot(phone) {
+  await fetch(`${API_BASE}/accounts/${phone}/toggle?user_id=${user.id}`, {
+    method: "POST"
+  });
   loadAccounts();
     }
     
