@@ -411,7 +411,11 @@
 
         data.accounts.forEach(a => {
           const li = document.createElement('li');
-          li.textContent = `📱 ${a.phone} (${a.online ? 'آنلاین' : 'آفلاین'})`;
+          li.innerHTML = `
+  📱 ${a.phone} (${a.online ? "آنلاین" : "آفلاین"})
+  <span style="float:left;color:red;cursor:pointer"
+        onclick="removeAccount('${a.phone}')">🗑</span>
+`;
           ul.appendChild(li);
         });
       } catch (e) {
@@ -420,6 +424,23 @@
       }
     }
 
+
+    async function removeAccount(phone) {
+  if (!confirm("اکانت حذف شود؟")) return;
+
+  const res = await fetch(`${API_BASE}/accounts/${phone}?user_id=${user.id}`, {
+    method: "DELETE"
+  });
+
+  const data = await res.json();
+  if (!data.ok) {
+    alert(data.error);
+    return;
+  }
+
+  loadAccounts();
+    }
+    
     // اجرای اولیه
     if (WebApp) {
         loadAccounts();
