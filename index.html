@@ -267,6 +267,7 @@
 
     const API_BASE = "https://hunter-api-2x97.onrender.com"; // 👈 این حالا تعریف شده است.
     let currentPhone = "";
+    let sending = false;
     
     const INIT_DATA = WebApp.initData;
     const user = WebApp?.initDataUnsafe?.user;
@@ -329,6 +330,9 @@
   btn.style.pointerEvents = "none";
   btn.style.opacity = "0.6";
 
+  if (sending) return;
+  sending = true;
+  
   try {
     const phone = document.getElementById("phoneInput").value.trim();
     if (!/^989\d{9}$/.test(phone)) {
@@ -359,6 +363,7 @@
   } finally {
     btn.style.pointerEvents = "auto";
     btn.style.opacity = "1";
+    sending = false;
   }
     }
 
