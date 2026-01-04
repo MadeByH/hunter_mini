@@ -356,10 +356,9 @@
         /* ============== Verify Code (FROM MODAL) ============== */
     async function verifyCodeFromModal() {
   const code = document.getElementById("codeInputInternal").value.trim();
-
   if (!code) return;
 
-  await fetch(API_BASE + "/login/verify-code", {
+  const res = await fetch(API_BASE + "/login/verify-code", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -369,7 +368,15 @@
     })
   });
 
-  alert("اکانت اضافه شد");
+  const data = await res.json();
+
+  if (!data.ok) {
+    alert("❌ " + (data.error || "کد اشتباه است"));
+    return;
+  }
+
+  closeVerifyModal();   // ✅ این خط
+  alert("✅ اکانت با موفقیت اضافه شد")
   loadAccounts();
     }
     
