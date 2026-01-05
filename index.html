@@ -524,6 +524,35 @@
   const el = document.getElementById("accountsList");
   el.style.display = el.style.display === "none" ? "block" : "none";
       }
+
+    let dragging = false;
+
+    canvas.addEventListener("mousedown", () => dragging = true);
+    canvas.addEventListener("mouseup", () => dragging = false);
+    canvas.addEventListener("mouseleave", () => dragging = false);
+
+    canvas.addEventListener("mousemove", e => {
+  if (!dragging) return;
+  handleKnobMove(e.clientX, e.clientY);
+});
+
+    canvas.addEventListener("touchmove", e => {
+  const t = e.touches[0];
+  handleKnobMove(t.clientX, t.clientY);
+});
+
+    function handleKnobMove(xClient, yClient) {
+  const rect = canvas.getBoundingClientRect();
+  const x = xClient - rect.left - 90;
+  const y = yClient - rect.top - 90;
+
+  let angle = Math.atan2(y, x);
+  angle = Math.max(-Math.PI*0.75, Math.min(Math.PI*0.75, angle));
+
+  const percent = (angle + Math.PI*0.75) / (Math.PI*1.5);
+  value = minSpeed + percent * (maxSpeed - minSpeed);
+  drawKnob();
+                   }
     
     /* ============== Navigation ============== */
     const pages = document.querySelectorAll('.page');
