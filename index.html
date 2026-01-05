@@ -423,7 +423,7 @@
 
         <input type="checkbox"
   ${a.online ? "checked" : ""}
-  onchange="toggleBot('${a.phone}')">
+  onchange="toggleBot('${a.phone}', this)">
 `;
           ul.appendChild(li);
         });
@@ -451,37 +451,31 @@
     }
 
 
-    async function toggleBot(phone) {
-  // نمایش یک لودینگ ساده یا غیرفعال کردن دکمه‌ها حین پردازش
-  const checkbox = event.target; // دریافت المانی که روی آن کلیک شده
+    async function toggleBot(phone, checkbox) {
   checkbox.disabled = true;
-  
-  try {
-    const res = await fetch(`${API_BASE}/accounts/${phone}/toggle?user_id=${user.id}`, {
-      method: "POST"
-    });
 
-    // بررسی پاسخ سرور
+  try {
+    const res = await fetch(
+      `${API_BASE}/accounts/${phone}/toggle?user_id=${user.id}`,
+      { method: "POST" }
+    );
+
     if (!res.ok) {
-        // اگر پاسخ 200-299 نبود، خطایی رخ داده است
-        const errorData = await res.json();
-        alert(`خطا در تغییر وضعیت: ${errorData.error || res.statusText}`);
-        // وضعیت چک‌باکس را به حالت قبل برمی‌گردانیم
-        checkbox.checked = !checkbox.checked; 
+      const errorData = await res.json();
+      alert(`خطا: ${errorData.error || res.statusText}`);
+      checkbox.checked = !checkbox.checked;
     } else {
-        // عملیات موفقیت‌آمیز بود، UI را رفرش می‌کنیم
-        loadAccounts();
+      await loadAccounts(); // ✅ وضعیت آنلاین/آفلاین فوراً آپدیت میشه
     }
 
   } catch (e) {
-    console.error("Network error:", e);
-    alert(`خطا در ارتباط با سرور.\n${e}`);
-    // وضعیت چک‌باکس را به حالت قبل برمی‌گردانیم
+    console.error(e);
+    alert("خطا در ارتباط با سرور");
     checkbox.checked = !checkbox.checked;
   } finally {
     checkbox.disabled = false;
   }
-}
+    }
     
     // اجرای اولیه
     if (WebApp) {
