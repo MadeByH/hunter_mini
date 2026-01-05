@@ -456,9 +456,8 @@
 
   try {
     const res = await fetch(
-      `${API_BASE}/accounts/${phone}/toggle?user_id=${user.id}`,
-      { method: "POST" }
-    );
+  `${API_BASE}/accounts/${phone}/toggle?user_id=${user.id}`
+);
 
     if (!res.ok) {
       const errorData = await res.json();
