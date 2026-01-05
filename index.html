@@ -287,7 +287,7 @@
 
   <!-- اکانت‌های بیشتر -->
       <div class="content-card small" id="moreAccounts" style="display:none">
-        <div class="expand-btn" onclick="toggleMoreAccounts()">
+        <div class="expand-btn" onclick="toggleMoreAccounts(this)">
       ▸ اکانت‌های بیشتر
         </div>
 
@@ -482,11 +482,13 @@
     function drawKnob() {
   ctx.clearRect(0,0,180,180);
 
+  const isDark = document.body.classList.contains("dark");
   const cx = 90, cy = 90, r = 70;
 
-  // arc background
   ctx.lineWidth = 10;
-  ctx.strokeStyle = isDark ? "#ff8c42" : "#e67e22";
+
+  // arc background
+  ctx.strokeStyle = isDark ? "#444" : "#ddd";
   ctx.beginPath();
   ctx.arc(cx, cy, r, Math.PI*0.75, Math.PI*2.25);
   ctx.stroke();
@@ -502,13 +504,8 @@
   );
   ctx.stroke();
 
-  const isDark = document.body.classList.contains("dark");
-
-// arc background
-  ctx.strokeStyle = isDark ? "#444" : "#ddd";
-
   document.getElementById("knobValue").innerText = value.toFixed(1) + "s";
-}
+    }
 
     drawKnob();
 
