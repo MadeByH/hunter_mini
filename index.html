@@ -452,11 +452,36 @@
 
 
     async function toggleBot(phone) {
-  await fetch(`${API_BASE}/accounts/${phone}/toggle?user_id=${user.id}`, {
-    method: "POST"
-  });
-  loadAccounts();
+  // نمایش یک لودینگ ساده یا غیرفعال کردن دکمه‌ها حین پردازش
+  const checkbox = event.target; // دریافت المانی که روی آن کلیک شده
+  checkbox.disabled = true;
+  
+  try {
+    const res = await fetch(`${API_BASE}/accounts/${phone}/toggle?user_id=${user.id}`, {
+      method: "POST"
+    });
+
+    // بررسی پاسخ سرور
+    if (!res.ok) {
+        // اگر پاسخ 200-299 نبود، خطایی رخ داده است
+        const errorData = await res.json();
+        alert(`خطا در تغییر وضعیت: ${errorData.error || res.statusText}`);
+        // وضعیت چک‌باکس را به حالت قبل برمی‌گردانیم
+        checkbox.checked = !checkbox.checked; 
+    } else {
+        // عملیات موفقیت‌آمیز بود، UI را رفرش می‌کنیم
+        loadAccounts();
     }
+
+  } catch (e) {
+    console.error("Network error:", e);
+    alert("خطا در ارتباط با سرور.");
+    // وضعیت چک‌باکس را به حالت قبل برمی‌گردانیم
+    checkbox.checked = !checkbox.checked;
+  } finally {
+    checkbox.disabled = false;
+  }
+}
     
     // اجرای اولیه
     if (WebApp) {
