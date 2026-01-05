@@ -475,7 +475,7 @@
 
   } catch (e) {
     console.error("Network error:", e);
-    alert("خطا در ارتباط با سرور.");
+    alert("خطا در ارتباط با سرور.", e);
     // وضعیت چک‌باکس را به حالت قبل برمی‌گردانیم
     checkbox.checked = !checkbox.checked;
   } finally {
