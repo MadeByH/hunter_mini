@@ -524,16 +524,6 @@
   const el = document.getElementById("accountsList");
   el.style.display = el.style.display === "none" ? "block" : "none";
       }
-
-    if (accounts.length > 1) {
-  document.getElementById("moreAccounts").style.display = "block";
-
-  accounts.slice(1).forEach(acc => {
-    const div = document.createElement("div");
-    div.innerHTML = `📱 ${acc.phone} – ولوم جدا`;
-    document.getElementById("accountsList").appendChild(div);
-  });
-}
     
     /* ============== Navigation ============== */
     const pages = document.querySelectorAll('.page');
@@ -712,6 +702,17 @@
 `;
           ul.appendChild(li);
         });
+
+        if (accounts.length > 1) {
+  document.getElementById("moreAccounts").style.display = "block";
+
+  accounts.slice(1).forEach(acc => {
+    const div = document.createElement("div");
+    div.innerHTML = `📱 ${acc.phone} – ولوم جدا`;
+    document.getElementById("accountsList").appendChild(div);
+  });
+        }
+        
       } catch (e) {
         console.error(e);
         ul.innerHTML = "<li style='color:red'>خطا در برقراری ارتباط با سرور برای دریافت لیست اکانت‌ها.</li>";
