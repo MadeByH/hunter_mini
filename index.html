@@ -200,6 +200,9 @@
     body.dark .nav-item {
   color:#aaa;
       }
+    body.dark .nav-item.active {
+  color: #ff8c42; /* نارنجی ملایم‌تر برای شب */
+}
   
   </style>
 </head>
@@ -225,13 +228,15 @@
       </div>
     </div>
 
-    <div class="content-card">
-      <h3>تنظیمات</h3>
+    <div id="settings-page" class="page">
+      <div class="content-card">
+        <h3>تنظیمات</h3>
 
-      <label style="display:flex;justify-content:space-between;align-items:center">
-        <span>🌙 حالت شب</span>
-        <input type="checkbox" id="darkToggle" onchange="toggleDarkMode(this)">
-      </label>
+        <label style="display:flex;justify-content:space-between;align-items:center">
+          <span>🌙 حالت شب</span>
+          <input type="checkbox" id="darkToggle" onchange="toggleDarkMode(this)">
+        </label>
+      </div>
     </div>
 
     <div id="info-page" class="page">
