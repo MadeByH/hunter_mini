@@ -177,7 +177,30 @@
   padding: 10px 0;        /* دکمه‌ها کوچیک‌تر */
   font-size: 14px;
 }
-    
+
+    body.dark {
+  background:#121212;
+  color:#eee;
+}
+
+    body.dark .header {
+  background:#1e1e1e;
+}
+
+    body.dark .content-card {
+  background:#1f1f1f;
+  box-shadow:none;
+}
+
+    body.dark .bottom-nav {
+  background:#1e1e1e;
+  border-color:#333;
+}
+
+    body.dark .nav-item {
+  color:#aaa;
+      }
+  
   </style>
 </head>
 
@@ -202,14 +225,13 @@
       </div>
     </div>
 
-    <div id="settings-page" class="page">
-      <div class="content-card">
-        <h3>تنظیمات</h3>
-        <ul>
-          <li>مدیریت دسترسی</li>
-          <li>اعلان‌ها</li>
-        </ul>
-      </div>
+    <div class="content-card">
+      <h3>تنظیمات</h3>
+
+      <label style="display:flex;justify-content:space-between;align-items:center">
+        <span>🌙 حالت شب</span>
+        <input type="checkbox" id="darkToggle" onchange="toggleDarkMode(this)">
+      </label>
     </div>
 
     <div id="info-page" class="page">
@@ -366,6 +388,26 @@
     closeConfirm();
   }
 }
+
+    function toggleDarkMode(el) {
+  if (el.checked) {
+    document.body.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.body.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+  }
+}
+
+// اعمال خودکار هنگام لود
+    (function initTheme() {
+  const theme = localStorage.getItem("theme");
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+    const toggle = document.getElementById("darkToggle");
+    if (toggle) toggle.checked = true;
+  }
+})();
     
     /* ============== Navigation ============== */
     const pages = document.querySelectorAll('.page');
