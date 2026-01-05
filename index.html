@@ -486,14 +486,14 @@
 
   // arc background
   ctx.lineWidth = 10;
-  ctx.strokeStyle = "#ddd";
+  ctx.strokeStyle = isDark ? "#ff8c42" : "#e67e22";
   ctx.beginPath();
   ctx.arc(cx, cy, r, Math.PI*0.75, Math.PI*2.25);
   ctx.stroke();
 
   // active arc
   const percent = (value - minSpeed) / (maxSpeed - minSpeed);
-  ctx.strokeStyle = "#e67e22";
+  ctx.strokeStyle = isDark ? "#ff8c42" : "#e67e22";
   ctx.beginPath();
   ctx.arc(
     cx, cy, r,
@@ -502,15 +502,22 @@
   );
   ctx.stroke();
 
+  const isDark = document.body.classList.contains("dark");
+
+// arc background
+  ctx.strokeStyle = isDark ? "#444" : "#ddd";
+
   document.getElementById("knobValue").innerText = value.toFixed(1) + "s";
 }
 
     drawKnob();
 
-    function toggleMoreAccounts() {
+    function toggleMoreAccounts(btn) {
   const el = document.getElementById("accountsList");
-  el.style.display = el.style.display === "none" ? "block" : "none";
-      }
+  const open = el.style.display === "block";
+  el.style.display = open ? "none" : "block";
+  btn.innerText = open ? "▸ اکانت‌های بیشتر" : "▾ اکانت‌های بیشتر";
+    }
 
     let dragging = false;
 
@@ -538,10 +545,9 @@
 
   const percent = (angle + Math.PI*0.75) / (Math.PI*1.5);
   value = minSpeed + percent * (maxSpeed - minSpeed);
+  localStorage.setItem("global_speed", value.toFixed(2));
   drawKnob();
                    }
-
-    localStorage.setItem("global_speed", value.toFixed(2));
 
     value = Number(localStorage.getItem("global_speed")) || 2.5;
     drawKnob();
