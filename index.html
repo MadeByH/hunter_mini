@@ -273,6 +273,32 @@
     <div class="add-btn" onclick="closeMsg()">تایید</div>
   </div>
 </div>
+
+  <div id="confirmModal" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  z-index:2100;
+  align-items:center;
+  justify-content:center;
+">
+  <div style="
+    background:#fff;
+    border-radius:12px;
+    padding:18px;
+    width:85%;
+    max-width:360px;
+    text-align:center;
+  ">
+    <div id="confirmText" style="margin-bottom:18px;font-size:14px;"></div>
+
+    <div style="display:flex;gap:10px">
+      <div class="add-btn cancel" onclick="closeConfirm()">لغو</div>
+      <div class="add-btn" style="background:#e74c3c" onclick="confirmDelete()">حذف</div>
+    </div>
+  </div>
+</div>
   
   <script>
     /* ============== Init Bale MiniApp & Globals ============== */
@@ -301,6 +327,44 @@
 
     function closeMsg() {
   document.getElementById("msgModal").style.display = "none";
+}
+
+    let deletePhone = null;
+
+    function showConfirm(phone) {
+  deletePhone = phone;
+  document.getElementById("confirmText").innerText =
+    "آیا از حذف این اکانت مطمئن هستید؟\n" + phone;
+  document.getElementById("confirmModal").style.display = "flex";
+}
+
+    function closeConfirm() {
+  deletePhone = null;
+  document.getElementById("confirmModal").style.display = "none";
+}
+
+    async function confirmDelete() {
+  if (!deletePhone) return;
+
+  try {
+    const res = await fetch(
+      `${API_BASE}/accounts/${deletePhone}?user_id=${user.id}`,
+      { method: "DELETE" }
+    );
+
+    const data = await res.json();
+
+    if (!data.ok) {
+      showModal(data.error || "خطا در حذف اکانت");
+    } else {
+      showModal("✅ اکانت با موفقیت حذف شد");
+      loadAccounts();
+    }
+  } catch (e) {
+    showModal("❌ خطا در ارتباط با سرور");
+  } finally {
+    closeConfirm();
+  }
 }
     
     /* ============== Navigation ============== */
@@ -472,7 +536,7 @@
           li.innerHTML = `
   📱 ${a.phone} (${a.online ? "آنلاین" : "آفلاین"})
   <span style="float:left;color:red;cursor:pointer"
-        onclick="removeAccount('${a.phone}')">🗑</span>
+        onclick="showConfirm('${a.phone}')">🗑</span>
 
         <input type="checkbox"
   ${a.online ? "checked" : ""}
@@ -484,23 +548,6 @@
         console.error(e);
         ul.innerHTML = "<li style='color:red'>خطا در برقراری ارتباط با سرور برای دریافت لیست اکانت‌ها.</li>";
       }
-    }
-
-
-    async function removeAccount(phone) {
-  if (!confirm("اکانت حذف شود؟")) return;
-
-  const res = await fetch(`${API_BASE}/accounts/${phone}?user_id=${user.id}`, {
-    method: "DELETE"
-  });
-
-  const data = await res.json();
-  if (!data.ok) {
-    alert(data.error);
-    return;
-  }
-
-  loadAccounts();
     }
 
 
