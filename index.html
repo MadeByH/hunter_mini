@@ -283,7 +283,46 @@
   opacity: 0.5;
   pointer-events: none;
 }
-  
+
+    .plan-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+    .plan-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+    .plan-card ul {
+  padding-right: 18px;
+  margin: 6px 0 10px;
+}
+
+    .buy-btn {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: #27ae60;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+    .buy-btn.disabled {
+  background: #aaa;
+  cursor: default;
+}
+
+    .plan-card.free { border-color: #ccc; }
+    .plan-card.bronze { border-color: #cd7f32; }
+    .plan-card.silver { border-color: #bdc3c7; }
+    .plan-card.gold { border-color: #f1c40f; }
+    
     canvas {
   touch-action: none;
 }
@@ -307,8 +346,60 @@
 
     <div id="shop-page" class="page">
       <div class="content-card">
-        <h3>خرید</h3>
-        <p>به‌زودی …</p>
+        <h3>💎 ارتقای پلن</h3>
+
+        <div class="plan-card free">
+          <div class="plan-header">
+            <strong>FREE</strong>
+            <span class="price">رایگان</span>
+          </div>
+          <ul>
+            <li>⏱ حداقل سرعت: 1.05s</li>
+            <li>📱 ۱ اکانت</li>
+            <li>🙏 تشکر خودکار ❌</li>
+          </ul>
+          <button disabled class="buy-btn disabled">پلن فعلی</button>
+        </div>
+
+        <div class="plan-card bronze">
+          <div class="plan-header">
+            <strong>BRONZE</strong>
+            <span class="price">49,000 تومان</span>
+          </div>
+          <ul>
+            <li>⏱ حداقل سرعت: 0.65s</li>
+            <li>📱 ۷ اکانت</li>
+            <li>🙏 تشکر خودکار ✅</li>
+          </ul>
+          <button class="buy-btn" onclick="buyPlan('BRONZE')">خرید</button>
+        </div>
+
+        <div class="plan-card silver">
+          <div class="plan-header">
+            <strong>SILVER</strong>
+            <span class="price">89,000 تومان</span>
+          </div>
+          <ul>
+            <li>⏱ حداقل سرعت: 0.5s</li>
+            <li>📱 ۱۰ اکانت</li>
+            <li>🙏 تشکر خودکار ✅</li>
+          </ul>
+          <button class="buy-btn" onclick="buyPlan('SILVER')">خرید</button>
+        </div>
+
+        <div class="plan-card gold">
+          <div class="plan-header">
+            <strong>GOLD</strong>
+            <span class="price">149,000 تومان</span>
+          </div>
+          <ul>
+            <li>⏱ حداقل سرعت: 0.35s</li>
+            <li>📱 ۱۵ اکانت</li>
+            <li>🙏 تشکر خودکار ✅</li>
+          </ul>
+          <button class="buy-btn" onclick="buyPlan('GOLD')">خرید</button>
+        </div>
+
       </div>
     </div>
 
@@ -754,6 +845,11 @@
   } catch {
     showModal("❌ خطا در ذخیره تنظیمات");
   }
+}
+
+    /* ============== plan shop ============== */
+    function buyPlan(plan) {
+  showModal("🛒 خرید پلن " + plan + " به‌زودی فعال می‌شود 😉");
 }
     
     /* ============== Navigation ============== */
