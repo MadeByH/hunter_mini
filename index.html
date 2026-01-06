@@ -210,6 +210,21 @@
   color: #eee;
 }
 
+    .modal-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  width: 85%;
+  max-width: 360px;
+  text-align: center;
+  color: #333;
+}
+
+    body.dark .modal-box {
+  background: #1f1f1f;
+  color: #eee;
+}
+    
     body.dark #msgText,
     body.dark #confirmText {
   color: #eee;
@@ -355,45 +370,17 @@
     </div>
   </div>
 
-  <div id="msgModal" style="
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.5);
-  z-index:2000;
-  align-items:center;
-  justify-content:center;
-">
-  <div style="
-    background:#fff;
-    border-radius:12px;
-    padding:18px;
-    width:85%;
-    max-width:360px;
-    text-align:center;
-  ">
+  <div id="msgModal">
+    <div class="modal-box">
+  
     <div id="msgText" style="margin-bottom:16px;font-size:14px;"></div>
     <div class="add-btn" onclick="closeMsg()">تایید</div>
   </div>
 </div>
 
-  <div id="confirmModal" style="
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.5);
-  z-index:2100;
-  align-items:center;
-  justify-content:center;
-">
-  <div style="
-    background:#fff;
-    border-radius:12px;
-    padding:18px;
-    width:85%;
-    max-width:360px;
-    text-align:center;
-  ">
+  <div id="confirmModal">
+    <div class="modal-box">
+  
     <div id="confirmText" style="margin-bottom:18px;font-size:14px;"></div>
 
     <div style="display:flex;gap:10px">
