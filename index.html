@@ -332,7 +332,7 @@
 
         <div class="speed-range">
           <span id="minSpeed">10s</span>
-          <span>0.8s</span>
+          <span>1.05s</span>
         </div>
       </div>
 
@@ -534,7 +534,7 @@
     const canvas = document.getElementById("speedKnob");
     const ctx = canvas.getContext("2d");
 
-    let minSpeed = 0.8;   // از پلن میاد
+    let minSpeed = 1.05;   // از پلن میاد
     let maxSpeed = 10;
     let value = 2.5;
 
@@ -632,6 +632,17 @@
     value = Number(localStorage.getItem("global_speed")) || 2.5;
     drawKnob();
 
+    function renderUserPlan() {
+  const el = document.getElementById("userPlanLabel");
+  el.innerText = userPlan;
+
+  if (userPlan !== "FREE") {
+    el.style.color = "#27ae60";
+  } else {
+    el.style.color = "#e74c3c";
+  }
+}
+    
     async function loadThanksSettings() {
   try {
     const res = await fetch(`${API_BASE}/settings?user_id=${user.id}`);
@@ -645,6 +656,7 @@
     document.getElementById("thanksDelay").value = data.thanks_delay || 7;
 
     applyThanksPlanRules();
+    renderUserPlan();
   } catch (e) {
     console.error(e);
   }
