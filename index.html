@@ -204,12 +204,6 @@
   color: #ff8c42; /* نارنجی ملایم‌تر برای شب */
 }
 
-    body.dark #msgModal > div,
-    body.dark #confirmModal > div {
-  background: #1f1f1f;
-  color: #eee;
-}
-
     .modal-box {
   background: #fff;
   border-radius: 12px;
@@ -231,6 +225,17 @@
 }
     body.dark #msgModal .add-btn {
   background: #ff8c42;
+}
+
+    #msgModal,
+    #confirmModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
 }
     
     .knob-container {
