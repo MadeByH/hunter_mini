@@ -272,6 +272,18 @@
   color: #3498db;
       }
 
+    body.dark textarea,
+    body.dark input[type="number"] {
+  background:#2a2a2a;
+  color:#eee;
+  border-color:#444;
+}
+
+    .locked {
+  opacity: 0.5;
+  pointer-events: none;
+}
+  
     canvas {
   touch-action: none;
 }
@@ -331,6 +343,41 @@
         </div>
 
         <div id="accountsList" style="display:none"></div>
+      </div>
+
+      <div class="content-card">
+        <h3>🙏 تشکر خودکار</h3>
+
+        <label style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span>فعال‌سازی</span>
+          <input type="checkbox" id="thanksEnabled" onchange="saveThanksSettings()">
+        </label>
+
+        <div id="thanksBox">
+          <textarea
+      id="thanksText"
+      placeholder="مثلاً: ممنون 🙏"
+      style="width:100%;min-height:60px;border-radius:8px;border:1px solid #ccc;padding:8px;margin-bottom:10px"
+    ></textarea>
+
+          <label style="font-size:13px">
+      ⏱ تاخیر ارسال (ثانیه)
+            <input
+        type="number"
+        id="thanksDelay"
+        min="0"
+        step="0.5"
+        value="7"
+        style="width:100%;margin-top:6px;border-radius:8px;border:1px solid #ccc;padding:6px"
+        onchange="saveThanksSettings()"
+      >
+          </label>
+        </div>
+
+        <div id="thanksLocked"
+       style="display:none;margin-top:10px;color:#e74c3c;font-size:13px">
+    🔒 این قابلیت فقط در پلن‌های پولی فعال است
+        </div>
       </div>
       
     </div>
@@ -412,6 +459,7 @@
     let currentPhone = "";
     let sending = false;
     let accounts = [];
+    let userPlan = "FREE"; // بعداً از API میاد
     
     const INIT_DATA = WebApp.initData;
     const user = WebApp?.initDataUnsafe?.user;
@@ -583,6 +631,69 @@
 
     value = Number(localStorage.getItem("global_speed")) || 2.5;
     drawKnob();
+
+    async function loadThanksSettings() {
+  try {
+    const res = await fetch(`${API_BASE}/settings?user_id=${user.id}`);
+    const data = await res.json();
+
+    userPlan = data.plan || "FREE";
+
+    const enabled = data.auto_thanks;
+    document.getElementById("thanksEnabled").checked = enabled;
+    document.getElementById("thanksText").value = data.thanks_text || "";
+    document.getElementById("thanksDelay").value = data.thanks_delay || 7;
+
+    applyThanksPlanRules();
+  } catch (e) {
+    console.error(e);
+  }
+      }
+
+    function applyThanksPlanRules() {
+  const box = document.getElementById("thanksBox");
+  const lock = document.getElementById("thanksLocked");
+  const toggle = document.getElementById("thanksEnabled");
+
+  if (userPlan === "FREE") {
+    toggle.checked = false;
+    box.classList.add("locked");
+    toggle.disabled = true;
+    lock.style.display = "block";
+  } else {
+    box.classList.remove("locked");
+    toggle.disabled = false;
+    lock.style.display = "none";
+  }
+    }
+
+    async function saveThanksSettings() {
+  if (userPlan === "FREE") {
+    showModal("❌ پلن شما از تشکر خودکار پشتیبانی نمی‌کند");
+    return;
+  }
+
+  const enabled = document.getElementById("thanksEnabled").checked;
+  const text = document.getElementById("thanksText").value.trim();
+  const delay = parseFloat(document.getElementById("thanksDelay").value);
+
+  try {
+    await fetch(`${API_BASE}/settings/thanks`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: user.id,
+        enabled,
+        text,
+        delay
+      })
+    });
+
+    showModal("✅ تنظیمات ذخیره شد");
+  } catch {
+    showModal("❌ خطا در ذخیره تنظیمات");
+  }
+}
     
     /* ============== Navigation ============== */
     const pages = document.querySelectorAll('.page');
@@ -816,6 +927,7 @@
     // اجرای اولیه
     if (WebApp) {
         loadAccounts();
+        loadThanksSettings();
     }
   </script>
 </body>
