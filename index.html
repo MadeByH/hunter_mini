@@ -748,16 +748,16 @@
   angle = Math.max(-Math.PI*0.75, Math.min(Math.PI*0.75, angle));
 
   const percent = (angle + Math.PI*0.75) / (Math.PI*1.5);
-  value = minSpeed + percent * (maxSpeed - minSpeed);
+  value = Math.max(
+  minSpeed,
+  minSpeed + percent * (maxSpeed - minSpeed)
+);
   localStorage.setItem("global_speed", value.toFixed(2));
-  
-  if (value < minSpeed) {
-  value = minSpeed;
-  showModal(`🔒 این سرعت مخصوص پلن ${userPlan} است`);
-}
       
   clearTimeout(window.speedTimer);
   window.speedTimer = setTimeout(() => {
+  
+  if (!accounts.length) return;
   fetch(`${API_BASE}/accounts/${accounts[0].phone}/speed?user_id=${user.id}&speed=${value}`, {
     method: "POST"
   });
@@ -808,7 +808,6 @@
     const res = await fetch(`${API_BASE}/settings?user_id=${user.id}`);
     const data = await res.json();
 
-    userPlan = data.plan || "FREE";
     minSpeed = PLAN_SPEED[userPlan] || 1.05;
 
     const enabled = data.auto_thanks;
