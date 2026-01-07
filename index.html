@@ -431,8 +431,8 @@
         </div>
 
         <div class="speed-range">
-          <span id="minSpeed">10s</span>
-          <span>1.05s</span>
+          <span id="maxSpeed">10s</span>
+          <span id="minSpeed">1.05s</span>
         </div>
       </div>
 
@@ -801,6 +801,7 @@
     function applyPlanLimits() {
   minSpeed = PLAN_SPEED[userPlan] || 1.05;
   document.getElementById("minSpeed").innerText = minSpeed + "s";
+  document.getElementById("maxSpeed").innerText = maxSpeed + "s";
   drawKnob();
     }
     
@@ -816,6 +817,7 @@
     document.getElementById("thanksText").value = data.thanks_text || "";
     document.getElementById("thanksDelay").value = data.thanks_delay || 7;
     document.getElementById("minSpeed").innerText = minSpeed + "s";
+    document.getElementById("maxSpeed").innerText = maxSpeed + "s";
 
     drawKnob();
     applyThanksPlanRules();
