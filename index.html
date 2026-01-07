@@ -635,6 +635,9 @@
     } else {
       showModal("✅ اکانت با موفقیت حذف شد");
       loadAccounts();
+      if (accounts.length) {
+  selectAccount(accounts[0].phone);
+}
     }
   } catch (e) {
     showModal("❌ خطا در ارتباط با سرور");
@@ -669,6 +672,7 @@
     let minSpeed = 1.05;   // از پلن میاد
     let maxSpeed = 10;
     let value = 2.5;
+    let activePhone = null;
     const PLAN_SPEED = {
   FREE: 1.05,
   PRO: 1,
@@ -749,6 +753,16 @@
   handleKnobMove(t.clientX, t.clientY);
 }, { passive: false });
 
+    function selectAccount(phone) {
+  activePhone = phone;
+
+  // لود سرعت مخصوص همین اکانت
+  const saved = localStorage.getItem(`speed_${phone}`);
+  value = saved ? Number(saved) : minSpeed;
+
+  drawKnob();
+    }
+    
     function handleKnobMove(xClient, yClient) {
   const rect = canvas.getBoundingClientRect();
   const x = xClient - rect.left - 90;
@@ -762,21 +776,24 @@
   minSpeed,
   minSpeed + percent * (maxSpeed - minSpeed)
 );
-  localStorage.setItem("global_speed", value.toFixed(2));
+  if (!activePhone) return;
+
+  localStorage.setItem(`speed_${activePhone}`, value.toFixed(2));
       
   clearTimeout(window.speedTimer);
   window.speedTimer = setTimeout(() => {
   
   if (!accounts.length) return;
-  fetch(`${API_BASE}/accounts/${accounts[0].phone}/speed?user_id=${user.id}&speed=${value}`, {
-    method: "POST"
-  });
+  fetch(
+  `${API_BASE}/accounts/${activePhone}/speed?user_id=${user.id}&speed=${value}`,
+  { method: "POST" }
+);
 }, 400);
       
   drawKnob();
                    }
 
-    value = Number(localStorage.getItem("global_speed")) || 2.5;
+    value = Number(localStorage.getItem("speed_${phone}")) || 2.5;
     drawKnob();
 
     function renderUserPlan() {
@@ -1061,6 +1078,9 @@
   closeVerifyModal();   // ✅ این خط
   showModal("✅ اکانت با موفقیت اضافه شد")
   loadAccounts();
+  if (accounts.length) {
+  selectAccount(accounts[0].phone);
+}
     }
     
     /* ============== Load Accounts ============== */
@@ -1086,15 +1106,19 @@
 
         data.accounts.forEach(a => {
           const li = document.createElement('li');
-          li.innerHTML = `
-  📱 ${a.phone} (${a.online ? "آنلاین" : "آفلاین"})
-  <span style="float:left;color:red;cursor:pointer"
-        onclick="showConfirm('${a.phone}')">🗑</span>
 
-        <input type="checkbox"
-  ${a.online ? "checked" : ""}
-  onchange="toggleBot('${a.phone}', this)">
-`;
+          li.onclick = () => selectAccount(a.phone);
+
+          li.innerHTML = `
+    📱 ${a.phone} (${a.online ? "آنلاین" : "آفلاین"})
+    <span style="float:left;color:red;cursor:pointer"
+          onclick="event.stopPropagation(); showConfirm('${a.phone}')">🗑</span>
+
+    <input type="checkbox"
+      ${a.online ? "checked" : ""}
+      onchange="event.stopPropagation(); toggleBot('${a.phone}', this)">
+  `;
+
           ul.appendChild(li);
         });
 
@@ -1137,6 +1161,9 @@
       checkbox.checked = !checkbox.checked;
     } else {
       await loadAccounts(); // ✅ وضعیت آنلاین/آفلاین فوراً آپدیت میشه
+      if (accounts.length) {
+  selectAccount(accounts[0].phone);
+}
     }
 
   } catch (e) {
@@ -1154,6 +1181,9 @@
         loadAccounts();
         loadThanksSettings();
         loadStats();
+        if (accounts.length) {
+  selectAccount(accounts[0].phone);
+}
     }
   </script>
 </body>
