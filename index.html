@@ -874,6 +874,27 @@
     function buyPlan(plan) {
   showModal("🛒 خرید پلن " + plan + " به‌زودی فعال می‌شود 😉");
 }
+
+    async function loadStats() {
+  try {
+    const res = await fetch(
+      `${API_BASE}/stats?user_id=${user.id}`
+    );
+    const data = await res.json();
+
+    document.getElementById("todayCount").innerText = data.today ?? 0;
+    document.getElementById("weekCount").innerText = data.week ?? 0;
+    document.getElementById("totalCount").innerText = data.total ?? 0;
+
+    if (userPlan === "FREE") {
+  document.getElementById("weekCount").innerText = "🔒";
+  document.getElementById("totalCount").innerText = "🔒";
+    }
+    
+  } catch (e) {
+    console.error(e);
+  }
+      }
     
     /* ============== Navigation ============== */
     const pages = document.querySelectorAll('.page');
@@ -1109,6 +1130,7 @@
         loadUserSettings();
         loadAccounts();
         loadThanksSettings();
+        loadStats();
     }
   </script>
 </body>
