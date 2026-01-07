@@ -883,7 +883,19 @@
 
     /* ============== plan shop ============== */
     function buyPlan(plan) {
-  showModal("🛒 خرید پلن " + plan + " به‌زودی فعال می‌شود 😉");
+  // باز کردن لینک بله مرتبط با پلن
+  const link = `https://ble.ir/myhunter_bot?start=buy_${plan}`;
+  
+  // باز کردن لینک در WebApp
+  if (window.Bale && Bale.WebApp) {
+    Bale.WebApp.openLink(link);
+
+    // بستن WebApp بعد از کمی تاخیر (اختیاری)
+    setTimeout(() => Bale.WebApp.close(), 300);
+  } else {
+    // اگر WebApp فعال نبود، پیام مودال پیش‌فرض نشان دهد
+    showModal("🛒 خرید پلن " + plan + " به‌زودی فعال می‌شود 😉");
+  }
 }
 
     async function loadStats() {
