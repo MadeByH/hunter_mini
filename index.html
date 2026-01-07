@@ -635,9 +635,6 @@
     } else {
       showModal("✅ اکانت با موفقیت حذف شد");
       loadAccounts();
-      if (accounts.length) {
-  selectAccount(accounts[0].phone);
-}
     }
   } catch (e) {
     showModal("❌ خطا در ارتباط با سرور");
@@ -1078,9 +1075,6 @@
   closeVerifyModal();   // ✅ این خط
   showModal("✅ اکانت با موفقیت اضافه شد")
   loadAccounts();
-  if (accounts.length) {
-  selectAccount(accounts[0].phone);
-}
     }
     
     /* ============== Load Accounts ============== */
@@ -1144,6 +1138,9 @@
         console.error(e);
         ul.innerHTML = "<li style='color:red'>خطا در برقراری ارتباط با سرور برای دریافت لیست اکانت‌ها.</li>";
       }
+      if (accounts.length) {
+  selectAccount(accounts[0].phone);
+}
     }
 
 
@@ -1161,9 +1158,6 @@
       checkbox.checked = !checkbox.checked;
     } else {
       await loadAccounts(); // ✅ وضعیت آنلاین/آفلاین فوراً آپدیت میشه
-      if (accounts.length) {
-  selectAccount(accounts[0].phone);
-}
     }
 
   } catch (e) {
@@ -1181,9 +1175,6 @@
         loadAccounts();
         loadThanksSettings();
         loadStats();
-        if (accounts.length) {
-  selectAccount(accounts[0].phone);
-}
     }
   </script>
 </body>
