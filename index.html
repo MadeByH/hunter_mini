@@ -773,7 +773,10 @@
   minSpeed,
   minSpeed + percent * (maxSpeed - minSpeed)
 );
-  if (!activePhone) return;
+  if (!activePhone) {
+  showModal("اول یک اکانت انتخاب کن");
+  return;
+    }
 
   localStorage.setItem(`speed_${activePhone}`, value.toFixed(2));
       
@@ -790,7 +793,7 @@
   drawKnob();
                    }
 
-    value = Number(localStorage.getItem("speed_${phone}")) || 2.5;
+    value = Number(localStorage.getItem(`speed_${activePhone}`)) || 2.5;
     drawKnob();
 
     function renderUserPlan() {
@@ -832,8 +835,6 @@
   try {
     const res = await fetch(`${API_BASE}/settings?user_id=${user.id}`);
     const data = await res.json();
-
-    minSpeed = PLAN_SPEED[userPlan] || 1.05;
 
     const enabled = data.auto_thanks;
     document.getElementById("thanksEnabled").checked = enabled;
