@@ -833,7 +833,7 @@
     
     async function loadThanksSettings() {
   try {
-    const res = await fetch(`${API_BASE}/settings?user_id=${user.id}`);
+    const res = await fetch(`${API_BASE}/user/settings?user_id=${user.id}`);
     const data = await res.json();
 
     const enabled = data.auto_thanks;
