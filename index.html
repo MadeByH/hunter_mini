@@ -757,6 +757,9 @@
   const saved = localStorage.getItem(`speed_${phone}`);
   value = saved ? Number(saved) : minSpeed;
 
+  value = Math.max(value, minSpeed);
+  localStorage.setItem(`speed_${phone}`, value.toFixed(2));
+  
   drawKnob();
     }
     
@@ -929,6 +932,9 @@
     });
 
     showModal("✅ تنظیمات ذخیره شد");
+    await fetch(`${API_BASE}/accounts/reload?user_id=${user.id}`, {
+  method: "POST"
+});
   } catch {
     showModal("❌ خطا در ذخیره تنظیمات");
   }
