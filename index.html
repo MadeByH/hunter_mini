@@ -877,6 +877,10 @@
     document.getElementById("minSpeed").innerText = minSpeed + "s";
     document.getElementById("maxSpeed").innerText = maxSpeed + "s";
 
+    if (userPlan === "FREE") {
+  document.getElementById("thanksEnabled").checked = false;
+    }
+    
     drawKnob();
     applyThanksPlanRules();
     renderUserPlan();
