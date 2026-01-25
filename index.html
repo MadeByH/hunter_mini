@@ -1179,6 +1179,28 @@
     }
 
 
+    async function loadAllSettings() {
+  const res = await fetch(`${API_BASE}/user/settings?user_id=${user.id}`);
+  const data = await res.json();
+
+  // 🔹 PLAN
+  userPlan = data.plan || "FREE";
+  document.getElementById("userPlanLabel").innerText = userPlan;
+  document.getElementById("infoPlan").innerText = userPlan;
+
+  // 🔹 THANKS
+  const toggle = document.getElementById("thanksEnabled");
+  toggle.checked = !!data.auto_thanks;
+
+  document.getElementById("thanksText").value = data.thanks_text || "";
+  document.getElementById("thanksDelay").value = data.thanks_delay ?? 7;
+
+  applyPlanLimits();
+  applyThanksPlanRules();
+  updateShopUI();
+    }
+
+  
     async function toggleBot(phone, checkbox) {
   checkbox.disabled = true;
 
@@ -1207,8 +1229,7 @@
     // اجرای اولیه
     if (WebApp) {
   (async () => {
-    await loadUserSettings();     // اول پلن
-    await loadThanksSettings();   // بعد قوانین پلن
+    await loadAllSettings();
     await loadAccounts();
     await loadStats();
   })();
