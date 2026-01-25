@@ -914,11 +914,11 @@
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        user_id: user.id,
-        enabled,
-        text,
-        delay
-      })
+  user_id: user.id,
+  auto_thanks: enabled,
+  thanks_text: text,
+  thanks_delay: delay
+})
     });
 
     showModal("✅ تنظیمات ذخیره شد");
