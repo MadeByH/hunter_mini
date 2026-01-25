@@ -827,8 +827,37 @@
   }
       
   applyPlanLimits();
+  updateShopUI();
     }
 
+    function updateShopUI() {
+  const plans = ["FREE", "BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND"];
+
+  plans.forEach(plan => {
+    const card = document.querySelector(
+      `.plan-card.${plan.toLowerCase()}`
+    );
+    if (!card) return;
+
+    const btn = card.querySelector(".buy-btn");
+    if (!btn) return;
+
+    if (plan === userPlan) {
+      btn.innerText = "پلن فعلی";
+      btn.disabled = true;
+      btn.classList.add("disabled");
+      card.style.opacity = "0.6";
+      card.style.borderWidth = "2px";
+      card.style.boxShadow = "0 0 12px rgba(39,174,96,0.5)";
+    } else {
+      btn.innerText = "خرید";
+      btn.disabled = false;
+      btn.classList.remove("disabled");
+      card.style.opacity = "1";
+    }
+  });
+             }
+    
     function applyPlanLimits() {
   minSpeed = PLAN_SPEED[userPlan] || 1.05;
   document.getElementById("minSpeed").innerText = minSpeed + "s";
