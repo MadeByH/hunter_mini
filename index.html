@@ -869,25 +869,18 @@
     }
     
     async function loadThanksSettings() {
-  try {
-    const res = await fetch(`${API_BASE}/user/settings?user_id=${user.id}`);
-    const data = await res.json();
+  const res = await fetch(`${API_BASE}/user/settings?user_id=${user.id}`);
+  const data = await res.json();
 
-    const enabled = data.auto_thanks;
-    document.getElementById("thanksEnabled").checked = enabled;
-    document.getElementById("thanksText").value = data.thanks_text || "";
-    document.getElementById("thanksDelay").value = data.thanks_delay || 7;
+  const enabled = !!data.auto_thanks;
 
-    if (userPlan === "FREE") {
-  document.getElementById("thanksEnabled").checked = false;
-    }
-    
-    drawKnob();
-    applyThanksPlanRules();
-    renderUserPlan();
-  } catch (e) {
-    console.error(e);
-  }
+  const toggle = document.getElementById("thanksEnabled");
+  toggle.checked = enabled;
+
+  document.getElementById("thanksText").value = data.thanks_text || "";
+  document.getElementById("thanksDelay").value = data.thanks_delay ?? 7;
+
+  applyThanksPlanRules();
       }
 
     function applyThanksPlanRules() {
@@ -896,7 +889,6 @@
   const toggle = document.getElementById("thanksEnabled");
 
   if (userPlan === "FREE") {
-    toggle.checked = false;
     box.classList.add("locked");
     toggle.disabled = true;
     lock.style.display = "block";
