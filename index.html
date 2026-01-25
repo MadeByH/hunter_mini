@@ -877,8 +877,6 @@
     document.getElementById("thanksEnabled").checked = enabled;
     document.getElementById("thanksText").value = data.thanks_text || "";
     document.getElementById("thanksDelay").value = data.thanks_delay || 7;
-    document.getElementById("minSpeed").innerText = minSpeed + "s";
-    document.getElementById("maxSpeed").innerText = maxSpeed + "s";
 
     if (userPlan === "FREE") {
   document.getElementById("thanksEnabled").checked = false;
