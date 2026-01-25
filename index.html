@@ -821,6 +821,11 @@
   const el = document.getElementById("userPlanLabel");
   el.style.color = userPlan === "FREE" ? "#e74c3c" : "#27ae60";
 
+  const infoPlan = document.getElementById("infoPlan");
+  if (infoPlan) {
+    infoPlan.innerText = userPlan;
+  }
+      
   applyPlanLimits();
     }
 
