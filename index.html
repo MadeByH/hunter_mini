@@ -905,31 +905,49 @@
     return;
   }
 
-  const enabled = document.getElementById("thanksEnabled").checked;
+  const toggle = document.getElementById("thanksEnabled");
+  const enabled = toggle.checked;
   const text = document.getElementById("thanksText").value.trim();
   const delay = parseFloat(document.getElementById("thanksDelay").value);
 
   try {
-    await fetch(`${API_BASE}/settings/thanks`, {
+    const res = await fetch(`${API_BASE}/settings/thanks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-  user_id: user.id,
-  auto_thanks: enabled,
-  thanks_text: text,
-  thanks_delay: delay
-})
+        user_id: user.id,
+        auto_thanks: enabled,
+        thanks_text: text,
+        thanks_delay: delay
+      })
     });
 
+    const data = await res.json();
+
+    if (!res.ok || !data.ok) {
+      throw new Error("save failed");
+    }
+
+    // 🔐 اگر بک‌اند اجازه نداده
+    if (!data.auto_thanks) {
+      toggle.checked = false;
+      showModal("🔒 این قابلیت با پلن فعلی شما فعال نمی‌ماند");
+      return;
+    }
+
     showModal("✅ تنظیمات ذخیره شد");
+
+    // 🔄 ری‌لود یوزربات‌ها
     await fetch(`${API_BASE}/accounts/reload?user_id=${user.id}`, {
-  method: "POST"
-});
-  } catch {
+      method: "POST"
+    });
+
+  } catch (e) {
+    console.error(e);
     showModal("❌ خطا در ذخیره تنظیمات");
   }
-}
-
+    }
+  
     /* ============== plan shop ============== */
     function buyPlan(plan) {
   // باز کردن لینک بله مرتبط با پلن
