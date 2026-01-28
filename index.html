@@ -672,21 +672,21 @@
     let me = null;
 
     async function loadMe() {
-  const res = fetch(`${API}/me?user_id=${user.id}`);
+  const res = await fetch(`${API_BASE}/me?user_id=${user.id}`);
   me = await res.json();
 
   if (me.is_blocked) {
     showPage("blocked-page");
     return false;
   }
-      
+
   if (!me.accepted_terms) {
     showPage("terms-page");
     return false;
   }
 
   return true;
-}
+    }
 
     async function initApp() {
   const ok = await loadMe();
