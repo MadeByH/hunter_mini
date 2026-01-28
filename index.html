@@ -649,6 +649,28 @@
     const INIT_DATA = WebApp.initData;
     const user = WebApp?.initDataUnsafe?.user;
 
+    let me = null;
+
+    async function loadMe() {
+  const res = await fetch(`${API_BASE}/me`);
+  me = await res.json();
+
+  if (!me.accepted_terms) {
+    showPage("terms-page");
+    return false;
+  }
+
+  return true;
+}
+
+    async function initApp() {
+  const ok = await loadMe();
+  if (!ok) return;
+
+  loadAccounts();
+  loadStats();
+    }
+  
     function showModal(text) {
   document.getElementById("msgText").innerText = text;
   document.getElementById("msgModal").style.display = "flex";
@@ -1307,8 +1329,7 @@
     if (WebApp) {
   (async () => {
     await loadAllSettings();
-    await loadAccounts();
-    await loadStats();
+    await initApp();
   })();
     }
   </script>
