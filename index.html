@@ -720,7 +720,11 @@
 }
 
     async function acceptTerms() {
-  await fetch(`${API_BASE}/terms/accept`, { method: "POST" })
+  await fetch(`${API_BASE}/terms/accept`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: user.id })
+  })
   location.reload()
     }
     
