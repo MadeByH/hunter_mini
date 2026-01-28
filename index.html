@@ -489,7 +489,8 @@
           <textarea
       id="thanksText"
       placeholder="مثلاً: ممنون 🙏"
-      style="width:100%;min-height:60px;border-radius:8px;border:1px solid #ccc;padding:8px;margin-bottom:10px"
+      maxlength="1250"
+      style="width:100%;min-height:60px;border-radius:8px;border:1px solid #ccc;padding:8px;margin-bottom:10px; direction: rtl; text-align: right;"
     ></textarea>
 
           <label style="font-size:13px">
@@ -500,7 +501,8 @@
         min="0"
         step="0.5"
         value="7"
-        style="width:100%;margin-top:6px;border-radius:8px;border:1px solid #ccc;padding:6px"
+        max="999" 
+        style="width:100%;margin-top:6px;border-radius:8px;border:1px solid #ccc;padding:6px; direction: rtl; text-align: right;"
         onchange="saveThanksSettings()"
       >
           </label>
