@@ -556,6 +556,25 @@
       </div>
     </div>
 
+  <div id="terms-page" class="page">
+  <div class="content-card">
+    <h3>⚠️ شرایط استفاده از شکارچی من</h3>
+
+    <p style="font-size:13px;line-height:1.8;text-align:justify">
+      • این سرویس یک ابزار اتوماسیون است و مسئولیت استفاده از آن کاملاً بر عهده کاربر می‌باشد.<br>
+      • هرگونه مسدودی، محدودیت یا حذف حساب کاربری در پیام‌رسان، ارتباطی با سرویس ندارد و مسئولیتی متوجه آن نخواهد بود.<br>
+      • استفاده برای اهداف غیرقانونی، مزاحمتی یا سوءاستفاده از قابلیت‌ها اکیداً ممنوع است.<br>
+      • در صورت تشخیص رفتار مشکوک یا مغایر با قوانین، دسترسی کاربر بدون اطلاع قبلی ممکن است مسدود شود.<br>
+      • بات فقط طبق پلن و محدودیت‌های فعال عمل می‌کند و تضمینی بابت عملکرد در شرایط خارج از کنترل (مثل و تضمینی بابت عملکرد در شرایط خارج از کنترل (مثل فیلتر، تغییر API یا خطای پلتفرم مقصد) وجود ندارد.<br>
+      • با قبول این شرایط و ادامه استفاده، شما تمامی موارد بالا را پذیرفته‌اید و قبول می‌کنید که مسئولیت کاربری بر عهده خودتان است.
+    </p>
+
+    <button class="buy-btn" onclick="acceptTerms()">
+      ✅ قبول می‌کنم
+    </button>
+  </div>
+</div>
+  
   <!-- Bottom Nav -->
   <div class="bottom-nav">
     <div class="nav-item active" data-page="home-page"><i class="fas fa-house"></i>خانه</div>
@@ -653,6 +672,11 @@
   document.getElementById("confirmModal").style.display = "none";
 }
 
+    async function acceptTerms() {
+  await fetch(`${API_BASE}/terms/accept`, { method: "POST" })
+  location.reload()
+    }
+    
     async function confirmDelete() {
   if (!deletePhone) return;
 
@@ -1170,6 +1194,11 @@
           return;
       }
 
+      if (!user.accepted_terms) {
+  showPage("terms-page")
+  return
+}
+      
       try {
         const res = await fetch(`${API_BASE}/accounts?user_id=${user.id}`);
         const data = await res.json();
