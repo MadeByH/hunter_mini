@@ -676,15 +676,18 @@
   me = await res.json();
 
   if (me.is_blocked) {
-    showPage("blocked-page");
+    switchPage("blocked-page");
+    document.querySelector(".bottom-nav").style.display = "none";
     return false;
   }
 
   if (!me.accepted_terms) {
-    showPage("terms-page");
+    switchPage("terms-page");
+    document.querySelector(".bottom-nav").style.display = "none";
     return false;
   }
 
+  document.querySelector(".bottom-nav").style.display = "flex";
   return true;
     }
 
