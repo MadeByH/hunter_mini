@@ -556,6 +556,26 @@
       </div>
     </div>
 
+    <div id="blocked-page" class="page">
+  <div class="content-card" style="text-align:center">
+    <h3 style="color:#c0392b">⛔ حساب شما مسدود شده است</h3>
+
+    <p style="font-size:13px;line-height:1.8;text-align:justify">
+      🚫 دسترسی شما به سرویس «شکارچی من» موقتاً یا دائماً مسدود شده است.<br><br>
+      دلایل احتمالی شامل موارد زیر است:<br>
+      • فعالیت مشکوک یا خلاف قوانین استفاده<br>
+      • ارسال درخواست‌های غیرمجاز یا تعداد زیاد عملیات خودکار<br>
+      • نقض شرایط استفاده یا قوانین پیام‌رسان هدف<br><br>
+      لطفاً در صورت نیاز به بررسی یا رفع مسدودیت، از طریق پشتیبانی اقدام کنید.<br>
+      در صورت تأیید و رفع مشکل، دسترسی به سرویس مجدداً برقرار خواهد شد.
+    </p>
+
+    <button class="buy-btn" onclick="contactSupport()">
+      📩 ارتباط با پشتیبانی
+    </button>
+  </div>
+</div>
+  
   <div id="terms-page" class="page">
   <div class="content-card">
     <h3>⚠️ شرایط استفاده از شکارچی من</h3>
@@ -652,9 +672,14 @@
     let me = null;
 
     async function loadMe() {
-  const res = await fetch(`${API_BASE}/me`);
+  const res = fetch(`${API}/me?user_id=${user.id}`);
   me = await res.json();
 
+  if (me.is_blocked) {
+    showPage("blocked-page");
+    return false;
+  }
+      
   if (!me.accepted_terms) {
     showPage("terms-page");
     return false;
