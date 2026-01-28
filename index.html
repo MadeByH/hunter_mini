@@ -723,10 +723,10 @@
   await fetch(`${API_BASE}/terms/accept`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ user_id: user.id })
-  })
-  location.reload()
-    }
+    body: JSON.stringify(user.id) // 👈 فقط عدد
+  });
+  location.reload();
+}
     
     async function confirmDelete() {
   if (!deletePhone) return;
