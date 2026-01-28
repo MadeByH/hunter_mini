@@ -1244,11 +1244,6 @@
           ul.innerHTML = "<li>⚠️ امکان دریافت اکانت‌ها بدون `owner_id` وجود ندارد.</li>";
           return;
       }
-
-      if (!user.accepted_terms) {
-  showPage("terms-page")
-  return
-}
       
       try {
         const res = await fetch(`${API_BASE}/accounts?user_id=${user.id}`);
